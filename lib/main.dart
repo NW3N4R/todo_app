@@ -3,19 +3,10 @@ import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
 import 'package:todo_app/pages/new_todo.dart';
 
-//Kalar Techincal Insitute
-//Department of Information Technology
-//Mobile Application Development Lecture
-//Supervisor: Mr. Nahro Nooraldin
-//Developed By :
-//Nwenar Ismael Abbas
-//Hanan Ayad Osman
-//Mariam Ali Hussein
-//‌Hedy Qadir Ahmad
-//project Repository on Github:
-//https://github.com/NW3N4R/todo_app.git
 void main() {
-  runApp(MaterialApp(home: const MainScreen()));
+  runApp(
+    MaterialApp(debugShowCheckedModeBanner: false, home: const MainScreen()),
+  );
 }
 
 class MainScreen extends StatefulWidget {

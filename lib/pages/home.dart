@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo_model.dart';
+import 'package:todo_app/pages/update.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 import 'package:todo_app/custom_widgets/shared_appbar.dart';
 
@@ -87,24 +88,26 @@ class _HomeState extends State<Home> {
                   color: getColor(todos[index].priority),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: ListTile(
-                  title: Text(
-                    todos[index].title,
-                    style: TextStyle(
-                      fontSize: 32,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
+                child: InkWell(
+                  child: ListTile(
+                    title: Text(
+                      todos[index].title,
+                      style: TextStyle(
+                        fontSize: 32,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  subtitle: Text(
-                    todos[index].description,
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                  trailing: Icon(
-                    todos[index].isCompleted ? Icons.done : Icons.circle,
-                    color: todos[index].isCompleted
-                        ? Colors.white
-                        : Colors.transparent,
+                    subtitle: Text(
+                      todos[index].description,
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                    trailing: Icon(
+                      todos[index].isCompleted ? Icons.done : Icons.circle,
+                      color: todos[index].isCompleted
+                          ? Colors.white
+                          : Colors.transparent,
+                    ),
                   ),
                   onLongPress: () {
                     setState(() {
@@ -112,6 +115,14 @@ class _HomeState extends State<Home> {
                       CurrentTodo.updateTodo(todos[index], context);
                     });
                     setupdb();
+                  },
+                  onDoubleTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UpdateTodo(todos[index]),
+                      ),
+                    ),
                   },
                 ),
               ),

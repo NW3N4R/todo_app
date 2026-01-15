@@ -25,6 +25,7 @@ class banner {
     };
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
+
     entry = OverlayEntry(
       builder: (context) => Positioned(
         top: MediaQuery.of(context).padding.top + 8, // below status bar

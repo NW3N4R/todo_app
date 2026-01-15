@@ -4,6 +4,9 @@ import 'package:todo_app/models/banner.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:path/path.dart' as p;
 
+//sqlite
+//myclass c = new myclass();
+//list<int>
 List<ToDoModel> todos = [];
 
 class CurrentTodo {
@@ -24,6 +27,8 @@ class CurrentTodo {
             id TEXT PRIMARY KEY,
             title TEXT,
             description TEXT,
+            repeatDate TEXT,
+            everyDate INTEGER,
             priority INTEGER,
             isCompleted INTEGER,
             createdAt TEXT,

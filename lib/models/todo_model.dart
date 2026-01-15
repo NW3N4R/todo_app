@@ -5,6 +5,8 @@ class ToDoModel {
   final String title;
   final String description;
   final Priority priority;
+  final String repeatDate;
+  bool everyDate = false;
   bool isCompleted;
 
   ToDoModel({
@@ -13,6 +15,8 @@ class ToDoModel {
     required this.description,
     required this.priority,
     required this.isCompleted,
+    required this.repeatDate,
+    required this.everyDate,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,7 +25,9 @@ class ToDoModel {
       'title': title,
       'description': description,
       'priority': priority.index,
-      'isCompleted': isCompleted ? 1 : 0, // Convert bool to int for SQLite
+      'isCompleted': isCompleted ? 1 : 0,
+      'repeatDate': repeatDate.toString(),
+      'everyDate': everyDate ? 1 : 0,
     };
   }
 
@@ -32,6 +38,8 @@ class ToDoModel {
       description: map['description'],
       priority: Priority.values[map['priority']],
       isCompleted: map['isCompleted'] == 1,
+      repeatDate: map['repeatDate'],
+      everyDate: map['everyDate'] == 1,
     );
   }
 }

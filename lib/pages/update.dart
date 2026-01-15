@@ -3,11 +3,12 @@ import 'package:intl/intl.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 
-class NewTodo extends StatefulWidget {
-  const NewTodo({super.key});
+class UpdateTodo extends StatefulWidget {
+  final ToDoModel modelToUpdate;
+  const UpdateTodo(this.modelToUpdate, {super.key});
 
   @override
-  State<NewTodo> createState() => _NewTodoState();
+  State<UpdateTodo> createState() => _UpdateTodoState();
 }
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -15,9 +16,21 @@ final TextEditingController _titleController = TextEditingController();
 final TextEditingController _descriptionController = TextEditingController();
 Priority _priority = Priority.low; // Default priority
 
-class _NewTodoState extends State<NewTodo> {
+class _UpdateTodoState extends State<UpdateTodo> {
   late String selectedDate = 'Select Date';
   bool everyDate = false;
+  late ToDoModel todo;
+  @override
+  void initState() {
+    todo = widget.modelToUpdate;
+    _titleController.text = todo.title;
+    _descriptionController.text = todo.description;
+    selectedDate = todo.repeatDate;
+    everyDate = todo.everyDate;
+    _priority = todo.priority;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<DateTime?> pickDate() async {
@@ -38,21 +51,7 @@ class _NewTodoState extends State<NewTodo> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: false,
-        title: const Text(
-          'New Todo in the House!💪',
-          style: TextStyle(
-            color: Color.fromARGB(255, 45, 186, 118),
-            fontWeight: FontWeight.w800,
-            fontSize: 24.0,
-            letterSpacing: 1,
-            fontFamily: 'Dyna', // Use the custom font
-          ),
-        ),
-      ),
+      appBar: AppBar(title: Text(todo.title)),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
@@ -141,23 +140,23 @@ class _NewTodoState extends State<NewTodo> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // If the form is valid, save the todo
-                      final todo = ToDoModel(
-                        id: DateTime.now().toString(),
+                      final model = ToDoModel(
+                        id: todo.id,
                         title: _titleController.text,
                         description: _descriptionController.text,
                         priority: _priority, // Default priority
-                        isCompleted: false,
+                        isCompleted: todo.isCompleted,
                         repeatDate: selectedDate,
                         everyDate: everyDate,
                       );
-                      if (await CurrentTodo.createTodo(todo, context) > 0) {
+                      if (await CurrentTodo.updateTodo(model, context)) {
                         _formKey.currentState!.reset();
                       }
                     }
                   },
                   icon: Icon(Icons.done, color: Colors.white, size: 30),
                   label: Text(
-                    'Save Todo',
+                    'Update Todo',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
