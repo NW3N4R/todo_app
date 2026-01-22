@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/localnotification.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 
@@ -148,6 +149,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
                         repeatDate: selectedDate!,
                         everyDate: everyDate,
                       );
+                      await scheduleNotification(todo);
                       if (await CurrentTodo.updateTodo(model, context)) {
                         _formKey.currentState!.reset();
                       }

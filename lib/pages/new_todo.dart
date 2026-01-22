@@ -163,7 +163,7 @@ class _NewTodoState extends State<NewTodo> {
                         everyDate: everyDate,
                       );
 
-                      await ScheduleNotification(todo);
+                      await scheduleNotification(todo);
 
                       if (await CurrentTodo.createTodo(todo, context) > 0) {
                         _formKey.currentState!.reset();
