@@ -24,7 +24,7 @@ class CurrentTodo {
         onCreate: (Database db, int version) async {
           await db.execute('''
           CREATE TABLE $_tableName (
-            id TEXT PRIMARY KEY,
+            id INTEGER PRIMARY KEY,
             title TEXT,
             description TEXT,
             repeatDate TEXT,
@@ -53,7 +53,7 @@ class CurrentTodo {
       todos.add(todo); // Add the new todo to the list
       if (st > 0) {
         if (context.mounted) {
-          banner.showBanner(
+          banner.showbanner(
             context: context,
             message: 'Todo Saved Successfuly!',
             severity: Severity.info,
@@ -63,7 +63,7 @@ class CurrentTodo {
       return st;
     } catch (error) {
       if (context.mounted) {
-        banner.showBanner(
+        banner.showbanner(
           context: context,
           message: 'Failed to save todo: $error',
           severity: Severity.error,
@@ -98,7 +98,7 @@ class CurrentTodo {
       var index = todos.indexWhere((t) => t.id == todo.id);
       if (index == -1) {
         if (context.mounted) {
-          banner.showBanner(
+          banner.showbanner(
             context: context,
             message: 'Todo not found for update.',
             severity: Severity.error,
@@ -109,7 +109,7 @@ class CurrentTodo {
       todos.removeAt(index);
       todos.insert(index, todo);
       if (context.mounted) {
-        banner.showBanner(
+        banner.showbanner(
           context: context,
           message: 'Todo Updated Successfully!',
           severity: Severity.info,
@@ -121,7 +121,7 @@ class CurrentTodo {
     }
   }
 
-  static Future<bool> deleteTodo(String id, BuildContext context) async {
+  static Future<bool> deleteTodo(int id, BuildContext context) async {
     if (_db == null) {
       throw Exception('Database not initialized. Call openDB() first.');
     }
@@ -132,7 +132,7 @@ class CurrentTodo {
         todos.removeAt(index); // Remove the todo from the list
       }
       if (context.mounted) {
-        banner.showBanner(
+        banner.showbanner(
           context: context,
           message: 'Todo Deleted Successfully!',
           severity: Severity.info,

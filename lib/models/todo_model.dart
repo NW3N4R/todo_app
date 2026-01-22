@@ -1,11 +1,11 @@
-enum Priority { low, medium, high }
+enum TodoPriority { low, medium, high }
 
 class ToDoModel {
-  final String id;
+  final int id;
   final String title;
   final String description;
-  final Priority priority;
-  final String repeatDate;
+  final TodoPriority priority;
+  final DateTime repeatDate;
   bool everyDate = false;
   bool isCompleted;
 
@@ -33,13 +33,17 @@ class ToDoModel {
 
   static ToDoModel fromMap(Map<String, dynamic> map) {
     return ToDoModel(
-      id: map['id'].toString(),
+      id: map['id'],
       title: map['title'],
       description: map['description'],
-      priority: Priority.values[map['priority']],
+      priority: TodoPriority.values[map['priority']],
       isCompleted: map['isCompleted'] == 1,
-      repeatDate: map['repeatDate'],
+      repeatDate: DateTime.parse(map['repeatDate']),
       everyDate: map['everyDate'] == 1,
     );
+  }
+
+  static String getFormattedDateAsString(DateTime datetime) {
+    return "${datetime.day}/${datetime.month}/${datetime.year} ${datetime.hour}:${datetime.minute}";
   }
 }

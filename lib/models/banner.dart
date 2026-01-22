@@ -5,7 +5,7 @@ enum Severity { error, warning, info }
 class banner {
   static OverlayEntry? _currentEntry;
 
-  static void showBanner({
+  static void showbanner({
     required BuildContext context,
     required String message,
     required Severity severity,

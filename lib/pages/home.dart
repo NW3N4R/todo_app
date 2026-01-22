@@ -22,13 +22,13 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Color getColor(Priority priority) {
+  Color getColor(TodoPriority priority) {
     switch (priority) {
-      case Priority.low:
+      case TodoPriority.low:
         return const Color.fromARGB(255, 86, 211, 220);
-      case Priority.medium:
+      case TodoPriority.medium:
         return const Color.fromARGB(255, 255, 194, 97);
-      case Priority.high:
+      case TodoPriority.high:
         return const Color.fromARGB(255, 255, 130, 110);
     }
   }

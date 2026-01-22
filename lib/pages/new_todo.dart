@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:todo_app/localnotification.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 
@@ -13,10 +13,10 @@ class NewTodo extends StatefulWidget {
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 final TextEditingController _titleController = TextEditingController();
 final TextEditingController _descriptionController = TextEditingController();
-Priority _priority = Priority.low; // Default priority
+TodoPriority _priority = TodoPriority.low; // Default priority
 
 class _NewTodoState extends State<NewTodo> {
-  late String selectedDate = 'Select Date';
+  DateTime? selectedDate;
   bool everyDate = false;
   @override
   Widget build(BuildContext context) {
@@ -25,16 +25,26 @@ class _NewTodoState extends State<NewTodo> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime.now(),
-        lastDate: DateTime(2100),
+        lastDate: DateTime(2030),
+      );
+      if (pickedDate == null) return null;
+
+      final TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (time == null) return null;
+      final DateTime dateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        time.hour,
+        time.minute,
       );
       setState(() {
-        if (pickedDate != null) {
-          selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-        } else {
-          selectedDate = 'Select Date';
-        }
+        selectedDate = dateTime;
       });
-      return pickedDate;
+      return dateTime;
     }
 
     return Scaffold(
@@ -91,7 +101,7 @@ class _NewTodoState extends State<NewTodo> {
                     ),
                     SizedBox(height: 14),
                     DropdownButtonFormField(
-                      items: Priority.values.map((p) {
+                      items: TodoPriority.values.map((p) {
                         return DropdownMenuItem(value: p, child: Text(p.name));
                       }).toList(),
                       decoration: getStyle('Priority'),
@@ -114,7 +124,9 @@ class _NewTodoState extends State<NewTodo> {
                     TextButton(
                       onPressed: () => pickDate(),
                       child: Text(
-                        selectedDate.toString(),
+                        selectedDate != null
+                            ? ToDoModel.getFormattedDateAsString(selectedDate!)
+                            : 'Select Date',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
@@ -142,14 +154,17 @@ class _NewTodoState extends State<NewTodo> {
                     if (_formKey.currentState!.validate()) {
                       // If the form is valid, save the todo
                       final todo = ToDoModel(
-                        id: DateTime.now().toString(),
+                        id: DateTime.now().microsecond,
                         title: _titleController.text,
                         description: _descriptionController.text,
                         priority: _priority, // Default priority
                         isCompleted: false,
-                        repeatDate: selectedDate,
+                        repeatDate: selectedDate!,
                         everyDate: everyDate,
                       );
+
+                      await ScheduleNotification(todo);
+
                       if (await CurrentTodo.createTodo(todo, context) > 0) {
                         _formKey.currentState!.reset();
                       }

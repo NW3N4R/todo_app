@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 
@@ -14,10 +13,10 @@ class UpdateTodo extends StatefulWidget {
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 final TextEditingController _titleController = TextEditingController();
 final TextEditingController _descriptionController = TextEditingController();
-Priority _priority = Priority.low; // Default priority
+TodoPriority _priority = TodoPriority.low; // Default priority
 
 class _UpdateTodoState extends State<UpdateTodo> {
-  late String selectedDate = 'Select Date';
+  late DateTime? selectedDate;
   bool everyDate = false;
   late ToDoModel todo;
   @override
@@ -42,9 +41,9 @@ class _UpdateTodoState extends State<UpdateTodo> {
       );
       setState(() {
         if (pickedDate != null) {
-          selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+          selectedDate = pickedDate;
         } else {
-          selectedDate = 'Select Date';
+          selectedDate = null;
         }
       });
       return pickedDate;
@@ -90,7 +89,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
                     ),
                     SizedBox(height: 14),
                     DropdownButtonFormField(
-                      items: Priority.values.map((p) {
+                      items: TodoPriority.values.map((p) {
                         return DropdownMenuItem(value: p, child: Text(p.name));
                       }).toList(),
                       decoration: getStyle('Priority'),
@@ -146,7 +145,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
                         description: _descriptionController.text,
                         priority: _priority, // Default priority
                         isCompleted: todo.isCompleted,
-                        repeatDate: selectedDate,
+                        repeatDate: selectedDate!,
                         everyDate: everyDate,
                       );
                       if (await CurrentTodo.updateTodo(model, context)) {

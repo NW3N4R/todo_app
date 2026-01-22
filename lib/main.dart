@@ -1,12 +1,38 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
 import 'package:todo_app/pages/new_todo.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  tz.initializeTimeZones();
+
+  await AwesomeNotifications().initialize(
+    null, // app icon
+    [
+      NotificationChannel(
+        channelKey: 'reminders',
+        channelName: 'Reminders',
+        channelDescription: 'Reminder notifications',
+        importance: NotificationImportance.Max,
+        channelShowBadge: true,
+      ),
+    ],
+    debug: true,
+  );
   runApp(
     MaterialApp(debugShowCheckedModeBanner: false, home: const MainScreen()),
   );
+}
+
+Future<void> ensureNotifPermission() async {
+  final allowed = await AwesomeNotifications().isNotificationAllowed();
+  if (!allowed) {
+    await AwesomeNotifications().requestPermissionToSendNotifications();
+  }
 }
 
 class MainScreen extends StatefulWidget {
@@ -22,7 +48,6 @@ class _MainScreenState extends State<MainScreen> {
   void onNavTap(int index) {
     setState(() {
       currentIndex = index;
-      print(index);
     });
   }
 
@@ -32,6 +57,14 @@ class _MainScreenState extends State<MainScreen> {
     const NewTodo(),
   ];
   String? selectedValue = 'accending';
+
+  @override
+  void initState() {
+    ensureNotifPermission();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
