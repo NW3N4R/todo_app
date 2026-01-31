@@ -1,15 +1,20 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
 import 'package:todo_app/pages/new_todo.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   tz.initializeTimeZones();
-
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   await AwesomeNotifications().initialize(
     null, // app icon
     [
@@ -24,7 +29,21 @@ void main() async {
     debug: true,
   );
   runApp(
-    MaterialApp(debugShowCheckedModeBanner: false, home: const MainScreen()),
+    MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'DroidArabicKufi', // 👈 default font
+      ),
+      locale: const Locale('ar'),
+      supportedLocales: const [Locale('ar')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      debugShowCheckedModeBanner: false,
+      home: const MainScreen(),
+    ),
   );
 }
 
@@ -60,9 +79,15 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    ensureNotifPermission();
+    request();
 
     super.initState();
+  }
+
+  void request() async {
+    await ensureNotifPermission();
+    final locale = Localizations.localeOf(context);
+    debugPrint('LOCALE: $locale');
   }
 
   @override

@@ -69,10 +69,10 @@ class _UpdateTodoState extends State<UpdateTodo> {
                   children: [
                     TextFormField(
                       controller: _titleController,
-                      decoration: getStyle('Title'),
+                      decoration: getStyle('ناو'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
+                          return 'تکایە ناوی ئەرک بنووسە';
                         }
                         return null;
                       },
@@ -80,7 +80,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
                     SizedBox(height: 14),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: getStyle('Description'),
+                      decoration: getStyle('وەسفی ئەرک'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a title';
@@ -91,12 +91,12 @@ class _UpdateTodoState extends State<UpdateTodo> {
                     SizedBox(height: 14),
                     DropdownButtonFormField(
                       items: TodoPriority.values.map((p) {
-                        return DropdownMenuItem(value: p, child: Text(p.name));
+                        return DropdownMenuItem(value: p, child: Text(p.ku));
                       }).toList(),
-                      decoration: getStyle('Priority'),
+                      decoration: getStyle('زەروریەت'),
                       validator: (value) {
                         if (value == null) {
-                          return 'Please select a priority';
+                          return 'تکایە پریۆریتێک دیاری بکە';
                         }
                         return null;
                       },
@@ -109,17 +109,19 @@ class _UpdateTodoState extends State<UpdateTodo> {
                       },
                     ),
                     SizedBox(height: 14),
-                    Text('Repeating Date', textAlign: TextAlign.start),
+                    Text('بەرواری ئەنجام دان', textAlign: TextAlign.start),
                     TextButton(
                       onPressed: () => pickDate(),
                       child: Text(
-                        selectedDate.toString(),
+                        selectedDate != null
+                            ? selectedDate.toString()
+                            : 'بەروار هەڵبژێرە',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
                     CheckboxListTile(
-                      title: const Text('Repeat Every Selected Day'),
-                      controlAffinity: ListTileControlAffinity.leading,
+                      title: const Text('دووبارەکردنەوە'),
+                      controlAffinity: ListTileControlAffinity.trailing,
                       value: everyDate,
                       onChanged: (value) {
                         setState(() {
@@ -157,7 +159,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
                   },
                   icon: Icon(Icons.done, color: Colors.white, size: 30),
                   label: Text(
-                    'Update Todo',
+                    'نوێکردنەوە',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,

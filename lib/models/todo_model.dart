@@ -47,3 +47,29 @@ class ToDoModel {
     return "${datetime.day}/${datetime.month}/${datetime.year} ${datetime.hour}:${datetime.minute}";
   }
 }
+
+extension TodoPriorityTranslate on TodoPriority {
+  /// English label
+  String get en {
+    switch (this) {
+      case TodoPriority.low:
+        return 'Low';
+      case TodoPriority.medium:
+        return 'Medium';
+      case TodoPriority.high:
+        return 'High';
+    }
+  }
+
+  /// Kurdish (Sorani) label
+  String get ku {
+    switch (this) {
+      case TodoPriority.low:
+        return 'نزم';
+      case TodoPriority.medium:
+        return 'مامناوەند';
+      case TodoPriority.high:
+        return 'بەرز';
+    }
+  }
+}

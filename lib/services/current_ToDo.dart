@@ -4,9 +4,6 @@ import 'package:todo_app/models/banner.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:path/path.dart' as p;
 
-//sqlite
-//myclass c = new myclass();
-//list<int>
 List<ToDoModel> todos = [];
 
 class CurrentTodo {
@@ -24,7 +21,7 @@ class CurrentTodo {
         onCreate: (Database db, int version) async {
           await db.execute('''
           CREATE TABLE $_tableName (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
             repeatDate TEXT,
@@ -50,7 +47,6 @@ class CurrentTodo {
         todo.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      todos.add(todo); // Add the new todo to the list
       if (st > 0) {
         if (context.mounted) {
           banner.showbanner(

@@ -14,7 +14,7 @@ class SharedAppbar {
                   maxLength: 25,
                   maxLines: 1,
                   decoration: InputDecoration(
-                    hintText: 'Search...',
+                    hintText: 'گەڕان',
                     counterText: '',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),

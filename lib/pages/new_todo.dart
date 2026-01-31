@@ -53,13 +53,12 @@ class _NewTodoState extends State<NewTodo> {
         backgroundColor: Colors.white,
         centerTitle: false,
         title: const Text(
-          'New Todo in the House!💪',
+          'ئەرکێکی نوێ دروست بکە',
           style: TextStyle(
             color: Color.fromARGB(255, 45, 186, 118),
             fontWeight: FontWeight.w800,
             fontSize: 24.0,
             letterSpacing: 1,
-            fontFamily: 'Dyna', // Use the custom font
           ),
         ),
       ),
@@ -80,10 +79,10 @@ class _NewTodoState extends State<NewTodo> {
                   children: [
                     TextFormField(
                       controller: _titleController,
-                      decoration: getStyle('Title'),
+                      decoration: getStyle('ناوی ئەرک'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
+                          return 'تکایە ناوی ئەرک بنووسە';
                         }
                         return null;
                       },
@@ -91,10 +90,10 @@ class _NewTodoState extends State<NewTodo> {
                     SizedBox(height: 14),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: getStyle('Description'),
+                      decoration: getStyle('وەسفی ئەرک'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
+                          return 'تکایە وەسفی ئەرک بنووسە';
                         }
                         return null;
                       },
@@ -102,12 +101,12 @@ class _NewTodoState extends State<NewTodo> {
                     SizedBox(height: 14),
                     DropdownButtonFormField(
                       items: TodoPriority.values.map((p) {
-                        return DropdownMenuItem(value: p, child: Text(p.name));
+                        return DropdownMenuItem(value: p, child: Text(p.ku));
                       }).toList(),
-                      decoration: getStyle('Priority'),
+                      decoration: getStyle('زەروریەت'),
                       validator: (value) {
                         if (value == null) {
-                          return 'Please select a priority';
+                          return 'تکایە پریۆریتێک دیاری بکە';
                         }
                         return null;
                       },
@@ -120,19 +119,19 @@ class _NewTodoState extends State<NewTodo> {
                       },
                     ),
                     SizedBox(height: 14),
-                    Text('Repeating Date', textAlign: TextAlign.start),
+                    Text('بەرواری ئەنجام دان', textAlign: TextAlign.start),
                     TextButton(
                       onPressed: () => pickDate(),
                       child: Text(
                         selectedDate != null
                             ? ToDoModel.getFormattedDateAsString(selectedDate!)
-                            : 'Select Date',
+                            : 'بەروار هەڵبژێرە',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
                     CheckboxListTile(
-                      title: const Text('Repeat Every Selected Day'),
-                      controlAffinity: ListTileControlAffinity.leading,
+                      title: const Text('دووبارەکردنەوە'),
+                      controlAffinity: ListTileControlAffinity.trailing,
                       value: everyDate,
                       onChanged: (value) {
                         setState(() {
@@ -172,7 +171,7 @@ class _NewTodoState extends State<NewTodo> {
                   },
                   icon: Icon(Icons.done, color: Colors.white, size: 30),
                   label: Text(
-                    'Save Todo',
+                    'وەرگرتن',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
@@ -198,6 +197,7 @@ InputDecoration getStyle(String labelText) {
     labelStyle: TextStyle(
       color: Colors.black, // Foreground color for the label
       fontWeight: FontWeight.w400,
+      fontFamily: 'DroidArabicKufi', // Use the custom font
     ),
 
     enabledBorder: OutlineInputBorder(
