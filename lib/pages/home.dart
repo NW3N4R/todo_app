@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_time_patterns.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/update.dart';
 import 'package:todo_app/services/current_ToDo.dart';
@@ -16,9 +17,19 @@ class _HomeState extends State<Home> {
     await CurrentTodo.openDB();
     final fetchedTodos = await CurrentTodo.readTodos();
     setState(() {
-      todos = fetchedTodos
-          .where((t) => t.isCompleted == (widget.key == ValueKey('completed')))
-          .toList();
+      final now = DateTime.now();
+      todos = fetchedTodos.where((t) {
+        if (widget.key == const ValueKey('completed')) {
+          return t.isCompleted;
+        }
+
+        if (widget.key == const ValueKey('overDue') && !t.isCompleted) {
+          return !t.isCompleted && t.repeatDate.isBefore(now);
+        }
+
+        // default: active / upcoming
+        return !t.isCompleted && t.repeatDate.isAfter(now);
+      }).toList();
     });
   }
 
@@ -57,7 +68,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: SharedAppbar.myAppBar(search),
+      appBar: SharedAppbar.myAppBar(search, context),
       body: SafeArea(
         child: ListView.builder(
           itemCount: todos.length,

@@ -71,9 +71,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> pages = [
+    Home(key: ValueKey('overDue')),
     Home(key: ValueKey('active')),
     Home(key: ValueKey('completed')),
-    const NewTodo(),
   ];
   String? selectedValue = 'accending';
 
@@ -103,25 +103,32 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             ButtonWidget(
               text: 'Home',
-              icon: Icons.home,
+              icon: Icons.close,
               onPressed: () => onNavTap(0),
               index: 0,
               currentIndex: currentIndex,
             ),
             ButtonWidget(
-              text: 'Completed',
-              icon: Icons.done,
+              text: 'Home',
+              icon: Icons.timer_sharp,
               onPressed: () => onNavTap(1),
               index: 1,
               currentIndex: currentIndex,
             ),
             ButtonWidget(
-              text: 'Profile',
-              icon: Icons.add,
+              text: 'Completed',
+              icon: Icons.done,
               onPressed: () => onNavTap(2),
               index: 2,
               currentIndex: currentIndex,
             ),
+            // ButtonWidget(
+            //   text: 'Profile',
+            //   icon: Icons.add_circle_outline_outlined,
+            //   onPressed: () => onNavTap(3),
+            //   index: 3,
+            //   currentIndex: currentIndex,
+            // ),
           ],
         ),
       ),
