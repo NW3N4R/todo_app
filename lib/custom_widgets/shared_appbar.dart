@@ -7,14 +7,6 @@ class SharedAppbar {
       backgroundColor: Colors.white,
       title: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewTodo()),
-            ),
-          ),
-
           Expanded(
             child: TextField(
               maxLength: 25,
@@ -27,6 +19,19 @@ class SharedAppbar {
                 ),
                 filled: true,
                 fillColor: Colors.white,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewTodo()),
+            ),
+            child: Text(
+              'ئەرکی نوێ',
+              style: TextStyle(
+                color: Color.fromARGB(255, 45, 186, 118),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

@@ -24,13 +24,10 @@ class CurrentTodo {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
-            repeatDate TEXT,
             everyDate INTEGER,
             priority INTEGER,
             isCompleted INTEGER,
-            createdAt TEXT,
-            completedAt TEXT,
-            dueDate TEXT
+            repeatingDays Text
           )
         ''');
         },

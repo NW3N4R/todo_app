@@ -6,7 +6,7 @@ class ToDoModel {
   final String description;
   final TodoPriority priority;
   final DateTime repeatDate;
-  bool everyDate = false;
+  final String repeatingDays;
   bool isCompleted;
 
   ToDoModel({
@@ -16,7 +16,7 @@ class ToDoModel {
     required this.priority,
     required this.isCompleted,
     required this.repeatDate,
-    required this.everyDate,
+    required this.repeatingDays,
   });
 
   Map<String, dynamic> toMap() {
@@ -27,7 +27,7 @@ class ToDoModel {
       'priority': priority.index,
       'isCompleted': isCompleted ? 1 : 0,
       'repeatDate': repeatDate.toString(),
-      'everyDate': everyDate ? 1 : 0,
+      'repeatingDays': repeatingDays,
     };
   }
 
@@ -39,7 +39,7 @@ class ToDoModel {
       priority: TodoPriority.values[map['priority']],
       isCompleted: map['isCompleted'] == 1,
       repeatDate: DateTime.parse(map['repeatDate']),
-      everyDate: map['everyDate'] == 1,
+      repeatingDays: map['repeatingDays'],
     );
   }
 

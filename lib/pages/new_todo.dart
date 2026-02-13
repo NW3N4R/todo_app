@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:todo_app/localnotification.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
@@ -13,40 +16,29 @@ class NewTodo extends StatefulWidget {
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 final TextEditingController _titleController = TextEditingController();
 final TextEditingController _descriptionController = TextEditingController();
+final TextEditingController _selectedDateController = TextEditingController();
 TodoPriority _priority = TodoPriority.low; // Default priority
 
 class _NewTodoState extends State<NewTodo> {
-  DateTime? selectedDate;
   bool everyDate = false;
   @override
+  void initState() {
+    _selectedDateController.text = 'بەرواری ئاگەدارکردنەوە هەڵبژێرە';
+    super.initState();
+  }
+
+  List<String> _selectedDays = [];
+  final List<String> _days = [
+    'شەممە',
+    'یەک شەممە',
+    'دوو شەممە',
+    'سێ شەممە',
+    'چوار شەممە',
+    'پێنج شەممە',
+    'هەینی شەممە',
+  ];
+  @override
   Widget build(BuildContext context) {
-    Future<DateTime?> pickDate() async {
-      final pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2030),
-      );
-      if (pickedDate == null) return null;
-
-      final TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-      if (time == null) return null;
-      final DateTime dateTime = DateTime(
-        pickedDate.year,
-        pickedDate.month,
-        pickedDate.day,
-        time.hour,
-        time.minute,
-      );
-      setState(() {
-        selectedDate = dateTime;
-      });
-      return dateTime;
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -119,25 +111,74 @@ class _NewTodoState extends State<NewTodo> {
                       },
                     ),
                     SizedBox(height: 14),
-                    Text('بەرواری ئەنجام دان', textAlign: TextAlign.start),
-                    TextButton(
-                      onPressed: () => pickDate(),
-                      child: Text(
-                        selectedDate != null
-                            ? ToDoModel.getFormattedDateAsString(selectedDate!)
-                            : 'بەروار هەڵبژێرە',
-                        style: TextStyle(color: Colors.black),
+                    TextFormField(
+                      controller: _selectedDateController,
+                      readOnly: true,
+                      decoration: getStyle('بەروار').copyWith(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedDateController.text =
+                                  'بەرواری ئاگەدارکردنەوە هەڵبژێرە';
+                            });
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
                       ),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('دووبارەکردنەوە'),
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      value: everyDate,
-                      onChanged: (value) {
-                        setState(() {
-                          everyDate = value!;
-                        });
+                      onTap: () async {
+                        _selectedDateController.text = await pickDate(context);
                       },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'تکایە وەسفی ئەرک بنووسە';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 14),
+                    TextFormField(
+                      controller: _selectedDateController,
+                      readOnly: true,
+                      decoration: getStyle('بەروار').copyWith(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedDateController.text =
+                                  'بەرواری ئاگەدارکردنەوە هەڵبژێرە';
+                            });
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                      ),
+                      onTap: () async {
+                        _selectedDateController.text = await pickDate(context);
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'تکایە وەسفی ئەرک بنووسە';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 14),
+                    MultiSelectDialogField<String>(
+                      dialogHeight: 350,
+                      chipDisplay: MultiSelectChipDisplay.none(),
+                      buttonText: Text('ئاگادارکردنەوە لە ڕۆژەکانی هەفتە'),
+                      buttonIcon: Icon(Icons.calendar_month),
+                      items: _days
+                          .map((day) => MultiSelectItem(day, day))
+                          .toList(),
+                      listType: MultiSelectListType.LIST,
+                      title: Text('ڕۆژەکانی هەفتە'),
+                      onConfirm: (values) {
+                        _selectedDays = values;
+                        // print("Selected: $_selectedDays");
+                      },
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
                   ],
                 ),
@@ -152,21 +193,21 @@ class _NewTodoState extends State<NewTodo> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // If the form is valid, save the todo
-                      final todo = ToDoModel(
-                        id: DateTime.now().microsecond,
-                        title: _titleController.text,
-                        description: _descriptionController.text,
-                        priority: _priority, // Default priority
-                        isCompleted: false,
-                        repeatDate: selectedDate!,
-                        everyDate: everyDate,
-                      );
+                      // final todo = ToDoModel(
+                      //   id: DateTime.now().microsecond,
+                      //   title: _titleController.text,
+                      //   description: _descriptionController.text,
+                      //   priority: _priority, // Default priority
+                      //   isCompleted: false,
+                      //   repeatDate: selectedDate!,
+                      //   // everyDate: everyDate,
+                      // );
 
-                      await scheduleNotification(todo);
+                      // await scheduleNotification(todo);
 
-                      if (await CurrentTodo.createTodo(todo, context) > 0) {
-                        _formKey.currentState!.reset();
-                      }
+                      // if (await CurrentTodo.createTodo(todo, context) > 0) {
+                      //   _formKey.currentState!.reset();
+                      // }
                     }
                   },
                   icon: Icon(Icons.done, color: Colors.white, size: 30),
@@ -186,6 +227,39 @@ class _NewTodoState extends State<NewTodo> {
       ),
     );
   }
+}
+
+Future<String> pickDate(BuildContext context) async {
+  final String initialValue = 'بەرواری ئاگەدارکردنەوە هەڵبژێرە';
+  final pickedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2030),
+  );
+  if (pickedDate == null) return initialValue;
+  final DateTime dateTime = DateTime(
+    pickedDate.year,
+    pickedDate.month,
+    pickedDate.day,
+  );
+
+  return DateFormat('dd-MM-yyyy').format(dateTime);
+}
+
+Future<String?> pickTime(BuildContext context) async {
+  final String initialValue = 'کاتی ئاگەدارکردنەوە هەڵبژێرە';
+  final TimeOfDay? pickedTime = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+  if (pickedTime == null) return initialValue;
+  final DateTime time = DateTime(
+    pickedTime.hour,
+    pickedTime.minute,
+    pickedTime.hourOfPeriod,
+  );
+  return DateFormat('hh:mm a').format(time);
 }
 
 InputDecoration getStyle(String labelText) {

@@ -26,7 +26,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
     _titleController.text = todo.title;
     _descriptionController.text = todo.description;
     selectedDate = todo.repeatDate;
-    everyDate = todo.everyDate;
+    // everyDate = todo.everyDate;
     _priority = todo.priority;
     super.initState();
   }
@@ -142,19 +142,19 @@ class _UpdateTodoState extends State<UpdateTodo> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // If the form is valid, save the todo
-                      final model = ToDoModel(
-                        id: todo.id,
-                        title: _titleController.text,
-                        description: _descriptionController.text,
-                        priority: _priority, // Default priority
-                        isCompleted: todo.isCompleted,
-                        repeatDate: selectedDate!,
-                        everyDate: everyDate,
-                      );
-                      await scheduleNotification(todo);
-                      if (await CurrentTodo.updateTodo(model, context)) {
-                        _formKey.currentState!.reset();
-                      }
+                      // final model = ToDoModel(
+                      //   id: todo.id,
+                      //   title: _titleController.text,
+                      //   description: _descriptionController.text,
+                      //   priority: _priority, // Default priority
+                      //   isCompleted: todo.isCompleted,
+                      //   repeatDate: selectedDate!,
+                      //   // everyDate: everyDate,
+                      // );
+                      // await scheduleNotification(todo);
+                      // if (await CurrentTodo.updateTodo(model, context)) {
+                      //   _formKey.currentState!.reset();
+                      // }
                     }
                   },
                   icon: Icon(Icons.done, color: Colors.white, size: 30),
