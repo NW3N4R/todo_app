@@ -18,18 +18,19 @@ class _HomeState extends State<Home> {
     final fetchedTodos = await CurrentTodo.readTodos();
     setState(() {
       final now = DateTime.now();
-      todos = fetchedTodos.where((t) {
-        if (widget.key == const ValueKey('completed')) {
-          return t.isCompleted;
-        }
+      // todos = fetchedTodos.where((t) {
+      //   if (widget.key == const ValueKey('completed')) {
+      //     return t.isCompleted;
+      //   }
 
-        if (widget.key == const ValueKey('overDue') && !t.isCompleted) {
-          return !t.isCompleted && t.repeatDate.isBefore(now);
-        }
+      //   if (widget.key == const ValueKey('overDue') && !t.isCompleted) {
+      //     return !t.isCompleted && t.repeatDate.isBefore(now);
+      //   }
 
-        // default: active / upcoming
-        return !t.isCompleted && t.repeatDate.isAfter(now);
-      }).toList();
+      //   // default: active / upcoming
+      //   return !t.isCompleted && t.repeatDate.isAfter(now);
+      // }).toList();
+      todos = fetchedTodos;
     });
   }
 

@@ -25,7 +25,7 @@ class _UpdateTodoState extends State<UpdateTodo> {
     todo = widget.modelToUpdate;
     _titleController.text = todo.title;
     _descriptionController.text = todo.description;
-    selectedDate = todo.repeatDate;
+    selectedDate = todo.remindingDate;
     // everyDate = todo.everyDate;
     _priority = todo.priority;
     super.initState();

@@ -5,8 +5,8 @@ class ToDoModel {
   final String title;
   final String description;
   final TodoPriority priority;
-  final DateTime repeatDate;
-  final String repeatingDays;
+  final DateTime? remindingDate;
+  final String? repeatingDays;
   bool isCompleted;
 
   ToDoModel({
@@ -15,7 +15,7 @@ class ToDoModel {
     required this.description,
     required this.priority,
     required this.isCompleted,
-    required this.repeatDate,
+    required this.remindingDate,
     required this.repeatingDays,
   });
 
@@ -26,7 +26,7 @@ class ToDoModel {
       'description': description,
       'priority': priority.index,
       'isCompleted': isCompleted ? 1 : 0,
-      'repeatDate': repeatDate.toString(),
+      'remindingDate': remindingDate.toString(),
       'repeatingDays': repeatingDays,
     };
   }
@@ -38,7 +38,7 @@ class ToDoModel {
       description: map['description'],
       priority: TodoPriority.values[map['priority']],
       isCompleted: map['isCompleted'] == 1,
-      repeatDate: DateTime.parse(map['repeatDate']),
+      remindingDate: DateTime.parse(map['remindingDate']),
       repeatingDays: map['repeatingDays'],
     );
   }

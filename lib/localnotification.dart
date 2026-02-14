@@ -12,12 +12,12 @@ Future<void> scheduleNotification(ToDoModel todo) async {
       wakeUpScreen: true,
     ),
     schedule: NotificationCalendar(
-      year: todo.repeatDate.year,
-      month: todo.repeatDate.month,
-      day: todo.repeatDate.day,
-      hour: todo.repeatDate.hour,
-      minute: todo.repeatDate.minute,
-      second: todo.repeatDate.second,
+      // year: todo.repeatDate.year,
+      // month: todo.repeatDate.month,
+      // day: todo.repeatDate.day,
+      // hour: todo.repeatDate.hour,
+      // minute: todo.repeatDate.minute,
+      // second: todo.repeatDate.second,
       millisecond: 0,
       repeats: false,
       preciseAlarm: true, // important for exact delivery
