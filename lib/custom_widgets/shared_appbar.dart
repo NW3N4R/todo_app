@@ -4,12 +4,14 @@ import 'package:todo_app/pages/new_todo.dart';
 class SharedAppbar {
   static AppBar myAppBar(ValueChanged<String> func, BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       title: Row(
         children: [
           Expanded(
             child: TextField(
               maxLength: 25,
+              onChanged: func,
               decoration: InputDecoration(
                 hintText: 'گەڕان',
                 counterText: '',
@@ -17,8 +19,7 @@ class SharedAppbar {
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
-                filled: true,
-                fillColor: Colors.white,
+                filled: false,
               ),
             ),
           ),
@@ -29,10 +30,7 @@ class SharedAppbar {
             ),
             child: Text(
               'ئەرکی نوێ',
-              style: TextStyle(
-                color: Color.fromARGB(255, 45, 186, 118),
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w900),
             ),
           ),
         ],

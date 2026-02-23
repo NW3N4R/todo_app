@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_time_patterns.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_app/models/formModel.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/update.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 import 'package:todo_app/custom_widgets/shared_appbar.dart';
+import 'package:todo_app/custom_widgets/styles.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,51 +15,56 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
-  void setupdb() async {
+class _HomeState extends State<Home> with FormModel {
+  List<ToDoModel> fetchedTodos = [];
+  Future setupdb() async {
     await CurrentTodo.openDB();
-    final fetchedTodos = await CurrentTodo.readTodos();
+    await CurrentTodo.readTodos();
     setState(() {
       final now = DateTime.now();
-      // todos = fetchedTodos.where((t) {
-      //   if (widget.key == const ValueKey('completed')) {
-      //     return t.isCompleted;
-      //   }
+      final todayName = DateFormat('EEEE').format(now); // e.g., "Monday"
 
-      //   if (widget.key == const ValueKey('overDue') && !t.isCompleted) {
-      //     return !t.isCompleted && t.repeatDate.isBefore(now);
-      //   }
+      fetchedTodos = todos.where((t) {
+        var overDue =
+            !t.isCompleted &&
+            (t.remindingDate != null && t.remindingDate!.isBefore(now));
 
-      //   // default: active / upcoming
-      //   return !t.isCompleted && t.repeatDate.isAfter(now);
-      // }).toList();
-      todos = fetchedTodos;
+        var key = widget.key.toString();
+        if (key.contains('overDue')) {
+          return overDue;
+        } else if (key.contains('completed')) {
+          return t.isCompleted;
+        } else if (key.contains('active')) {
+          return !t.isCompleted &&
+                  (t.remindingDate != null
+                      ? t.remindingDate!.isAfter(now)
+                      : false) ||
+              ((t.repeatingDays != null && t.repeatingDays!.isNotEmpty) &&
+                  matchingDays(t.repeatingDays!).contains(todayName));
+        }
+        throw Exception('Unknown tab key: $key');
+      }).toList();
+
+      // REMOVED: todos = fetchedTodos; <--- This was your bug!
     });
-  }
-
-  Color getColor(TodoPriority priority) {
-    switch (priority) {
-      case TodoPriority.low:
-        return const Color.fromARGB(255, 86, 211, 220);
-      case TodoPriority.medium:
-        return const Color.fromARGB(255, 255, 194, 97);
-      case TodoPriority.high:
-        return const Color.fromARGB(255, 255, 130, 110);
-    }
   }
 
   void search(String text) async {
-    final fetchedTodos = await CurrentTodo.readTodos();
-
-    setState(() {
-      todos = fetchedTodos
-          .where(
-            (t) =>
-                (t.isCompleted == (widget.key == ValueKey('completed')) &&
-                t.title.toLowerCase().startsWith(text.toLowerCase())),
-          )
-          .toList();
-    });
+    if (mounted) {
+      setState(() {
+        fetchedTodos = [];
+      });
+      await setupdb();
+      setState(() {
+        fetchedTodos = fetchedTodos
+            .where(
+              (t) =>
+                  t.title.toLowerCase().contains(text.toLowerCase()) ||
+                  t.description.toLowerCase().contains(text.toLowerCase()),
+            )
+            .toList();
+      });
+    }
   }
 
   @override
@@ -65,81 +73,98 @@ class _HomeState extends State<Home> {
     setupdb();
   }
 
+  double deleteIconSize = 20;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: SharedAppbar.myAppBar(search, context),
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: todos.length,
-          itemBuilder: (context, index) {
-            final todo = todos[index];
-            return Dismissible(
-              direction: DismissDirection.endToStart,
-              key: ValueKey(todo.id), // Unique key per item
-              onDismissed: (direction) {
-                setState(() {
-                  todos.removeAt(index); // remove from list
-                });
-                CurrentTodo.deleteTodo(todo.id, context); // remove from DB
-              },
-              background: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.centerRight,
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.delete, color: Colors.white),
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: getColor(todos[index].priority),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: InkWell(
-                  child: ListTile(
-                    title: Text(
-                      todos[index].title,
-                      style: TextStyle(
-                        fontSize: 32,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    subtitle: Text(
-                      todos[index].description,
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                    trailing: Icon(
-                      todos[index].isCompleted ? Icons.done : Icons.circle,
-                      color: todos[index].isCompleted
-                          ? Colors.white
-                          : Colors.transparent,
-                    ),
-                  ),
-                  onLongPress: () {
-                    setState(() {
-                      todos[index].isCompleted = !todos[index].isCompleted;
-                      CurrentTodo.updateTodo(todos[index], context);
-                    });
-                    setupdb();
-                  },
-                  onDoubleTap: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UpdateTodo(todos[index]),
-                      ),
-                    ),
-                  },
-                ),
-              ),
-            );
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(
+              Duration(seconds: 1),
+            ); // Simulate a delay for refreshing
+            setupdb();
           },
+          child: ListView.builder(
+            itemCount: fetchedTodos.length,
+            itemBuilder: (context, index) {
+              final todo = fetchedTodos[index];
+              return Dismissible(
+                direction: DismissDirection.endToStart,
+                onUpdate: (details) {
+                  setState(() {
+                    // 20 is the base size, 80 is the growth potential
+                    deleteIconSize = 20 + (details.progress * 20);
+                  });
+
+                  // Optional: Add haptic feedback when it gets big enough
+                  if (details.reached && !details.previousReached) {
+                    HapticFeedback.mediumImpact();
+                  }
+                },
+                key: ValueKey(fetchedTodos[index].id), // Unique key per item
+                onDismissed: (direction) {
+                  setState(() {
+                    fetchedTodos.removeAt(index); // remove from list
+                  });
+                  CurrentTodo.deleteTodo(todo.id, context); // remove from DB
+                },
+                background: Container(
+                  margin: const EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(color: Colors.red),
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: deleteIconSize,
+                  ),
+                ),
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: cardBackColor(
+                      fetchedTodos[index].priority,
+                      context,
+                    ).withAlpha(120),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: InkWell(
+                    child: ListTile(
+                      title: Text(
+                        fetchedTodos[index].title,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      subtitle: Text(
+                        fetchedTodos[index].description,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    onLongPress: () {
+                      setState(() {
+                        fetchedTodos[index].isCompleted =
+                            !fetchedTodos[index].isCompleted;
+                        CurrentTodo.updateTodo(fetchedTodos[index], context);
+                      });
+                      setupdb();
+                    },
+                    onDoubleTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdateTodo(fetchedTodos[index]),
+                        ),
+                      ),
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/localnotification.dart';
+import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/models/formmodel.dart';
+import 'package:todo_app/themes.dart';
 
 class UpdateTodo extends StatefulWidget {
   final ToDoModel modelToUpdate;
@@ -11,197 +18,232 @@ class UpdateTodo extends StatefulWidget {
   State<UpdateTodo> createState() => _UpdateTodoState();
 }
 
-final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-final TextEditingController _titleController = TextEditingController();
-final TextEditingController _descriptionController = TextEditingController();
-TodoPriority _priority = TodoPriority.low; // Default priority
+class _UpdateTodoState extends State<UpdateTodo> with FormModel {
+  List<String> _selectedDays = [];
 
-class _UpdateTodoState extends State<UpdateTodo> {
   late DateTime? selectedDate;
   bool everyDate = false;
   late ToDoModel todo;
   @override
   void initState() {
     todo = widget.modelToUpdate;
-    _titleController.text = todo.title;
-    _descriptionController.text = todo.description;
+    titleController.text = todo.title;
+    descriptionController.text = todo.description;
     selectedDate = todo.remindingDate;
-    // everyDate = todo.everyDate;
-    _priority = todo.priority;
+    priority = todo.priority;
+    selectedDateController.text = todo.remindingDate != null
+        ? DateFormat('dd-MM-yyyy').format(todo.remindingDate!)
+        : selectDateHolder;
+
+    selectedTimeController.text = todo.remindingDate != null
+        ? DateFormat('hh:mm a').format(todo.remindingDate!)
+        : selectTimeHolder;
+
+    _selectedDays = todo.repeatingDays != null
+        ? todo.repeatingDays!.split(',').map((day) => day.trim()).toList()
+        : [];
     super.initState();
+  }
+
+  void post() async {
+    if (formKey.currentState!.validate()) {
+      DateFormat inputFormat = DateFormat('dd-MM-yyyy');
+      DateTime selectedDate = inputFormat.parse(selectedDateController.text);
+      // If the form is valid, save the todo
+      final todo = ToDoModel(
+        id: widget.modelToUpdate.id,
+        title: titleController.text,
+        description: descriptionController.text,
+        priority: priority, // Default priority
+        isCompleted: false,
+        remindingDate: selectedDate,
+        repeatingDays: _selectedDays.join(','),
+        // everyDate: everyDate,
+      );
+      CurrentTodo.updateTodo(todo, context);
+      // await scheduleNotification(todo);
+
+      // if (await CurrentTodo.createTodo(todo, context) > 0) {
+      //   formKey.currentState!.reset();
+      // }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<DateTime?> pickDate() async {
-      final pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100),
-      );
-      setState(() {
-        if (pickedDate != null) {
-          selectedDate = pickedDate;
-        } else {
-          selectedDate = null;
-        }
-      });
-      return pickedDate;
-    }
-
     return Scaffold(
-      appBar: AppBar(title: Text(todo.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.greenAccent.withValues(alpha: 0.29),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: getStyle('ناو'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'تکایە ناوی ئەرک بنووسە';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 14),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: getStyle('وەسفی ئەرک'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 14),
-                    DropdownButtonFormField(
-                      items: TodoPriority.values.map((p) {
-                        return DropdownMenuItem(value: p, child: Text(p.ku));
-                      }).toList(),
-                      decoration: getStyle('زەروریەت'),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'تکایە پریۆریتێک دیاری بکە';
-                        }
-                        return null;
-                      },
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'ئەرکێکی نوێ دروست بکە',
+          style: TextStyle(
+            fontWeight: FontWeight.w200,
+            fontSize: 20.0,
+            fontFamily: 'DroidArabicKufi',
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Flex(
+          direction: Axis.vertical,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: titleController,
+                          decoration: getStyle('ناوی ئەرک', context),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'تکایە ناوی ئەرک بنووسە';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 14),
+                        TextFormField(
+                          controller: descriptionController,
+                          decoration: getStyle('وەسفی ئەرک', context),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'تکایە وەسفی ئەرک بنووسە';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 14),
+                        DropdownButtonFormField(
+                          items: TodoPriority.values.map((p) {
+                            return DropdownMenuItem(
+                              value: p,
+                              child: Text(p.ku),
+                            );
+                          }).toList(),
+                          decoration: getStyle('زەروریەت', context),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'تکایە پریۆریتێک دیاری بکە';
+                            }
+                            return null;
+                          },
 
-                      initialValue: _priority, // Default value
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 14),
-                    Text('بەرواری ئەنجام دان', textAlign: TextAlign.start),
-                    TextButton(
-                      onPressed: () => pickDate(),
-                      child: Text(
-                        selectedDate != null
-                            ? selectedDate.toString()
-                            : 'بەروار هەڵبژێرە',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('دووبارەکردنەوە'),
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      value: everyDate,
-                      onChanged: (value) {
-                        setState(() {
-                          everyDate = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.greenAccent.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextButton.icon(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      // If the form is valid, save the todo
-                      // final model = ToDoModel(
-                      //   id: todo.id,
-                      //   title: _titleController.text,
-                      //   description: _descriptionController.text,
-                      //   priority: _priority, // Default priority
-                      //   isCompleted: todo.isCompleted,
-                      //   repeatDate: selectedDate!,
-                      //   // everyDate: everyDate,
-                      // );
-                      // await scheduleNotification(todo);
-                      // if (await CurrentTodo.updateTodo(model, context)) {
-                      //   _formKey.currentState!.reset();
-                      // }
-                    }
-                  },
-                  icon: Icon(Icons.done, color: Colors.white, size: 30),
-                  label: Text(
-                    'نوێکردنەوە',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w900,
+                          initialValue: priority, // Default value
+                          onChanged: (value) {
+                            setState(() {
+                              priority = value!;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 14),
+                        TextFormField(
+                          controller: selectedDateController,
+                          readOnly: true,
+                          decoration: getStyle('بەروار', context).copyWith(
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  selectedDateController.text =
+                                      selectDateHolder;
+                                });
+                              },
+                              icon: Icon(Icons.clear),
+                            ),
+                          ),
+                          onTap: () async {
+                            selectedDateController.text = await pickDate(
+                              context,
+                            );
+                          },
+                          validator: (value) {
+                            if (value == selectDateHolder &&
+                                _selectedDays.isEmpty) {
+                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 14),
+                        TextFormField(
+                          controller: selectedTimeController,
+                          readOnly: true,
+                          decoration: getStyle('کات', context),
+                          onTap: () async {
+                            selectedTimeController.text =
+                                await pickTime(context) ?? '';
+                          },
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value == selectTimeHolder) {
+                              return 'تکایە کاتی ئاگەدارکردنەوە دیاری بکە';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 14),
+                        MultiSelectDialogField<String>(
+                          initialValue: _selectedDays,
+                          selectedItemsTextStyle: TextStyle(
+                            color: AppThemes.getPrimaryColor(context),
+                            fontWeight: FontWeight.bold,
+                          ),
+
+                          selectedColor: AppThemes.getPrimaryColor(
+                            context,
+                          ).withAlpha(50),
+                          chipDisplay: MultiSelectChipDisplay.none(),
+                          buttonText: Text('ئاگادارکردنەوە لە ڕۆژەکانی هەفتە'),
+                          buttonIcon: Icon(Icons.calendar_month),
+                          items: days
+                              .map((day) => MultiSelectItem(day, day))
+                              .toList(),
+                          listType: MultiSelectListType.CHIP,
+                          title: Text('ڕۆژەکانی هەفتە'),
+                          validator: (value) {
+                            if (selectedDateController.text ==
+                                    selectDateHolder &&
+                                _selectedDays.isEmpty) {
+                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
+                            }
+
+                            return null;
+                          },
+                          onConfirm: (values) {
+                            _selectedDays = values;
+                            // print("Selected: $_selectedDays");
+                          },
+                          confirmText: Text(
+                            'وەرگرتن',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          cancelText: Text(
+                            'پاشگەزبونەوە',
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.secondary, // Dynamic Secondary
+                            ),
+                          ),
+                          decoration: getContainerStyleAsInput(context),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            primaryButton('وەرگرتن', post, context),
+          ],
         ),
       ),
     );
   }
-}
-
-InputDecoration getStyle(String labelText) {
-  return InputDecoration(
-    labelText: labelText,
-    filled: true,
-    fillColor: Colors.white,
-    floatingLabelBehavior: FloatingLabelBehavior.auto,
-    labelStyle: TextStyle(
-      color: Colors.black, // Foreground color for the label
-      fontWeight: FontWeight.w400,
-    ),
-
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(8.0),
-      ), // Border radius for enabled state
-      borderSide: BorderSide(
-        color: Color.fromARGB(105, 45, 186, 118),
-      ), // Border color for enabled state
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(10),
-      ), // Border radius for focused state
-      borderSide: BorderSide(
-        color: Color.fromARGB(155, 45, 186, 118),
-      ), // Border color for focused state
-    ),
-  );
 }

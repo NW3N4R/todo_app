@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/themes.dart';
 
 class ButtonWidget extends StatelessWidget {
   final String text;
@@ -28,7 +29,7 @@ class ButtonWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: currentIndex == index
-                ? const Color.fromARGB(48, 139, 208, 118)
+                ? AppThemes.getPrimaryColor(context).withAlpha(50)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(50),
           ),
@@ -40,7 +41,7 @@ class ButtonWidget extends StatelessWidget {
                 size: 32,
                 color: currentIndex != index
                     ? const Color.fromARGB(255, 105, 104, 104)
-                    : const Color.fromARGB(248, 139, 208, 118),
+                    : AppThemes.getPrimaryColor(context),
               ),
               // Text(
               //   text,

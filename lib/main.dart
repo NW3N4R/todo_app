@@ -4,10 +4,10 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
-import 'package:todo_app/pages/new_todo.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:todo_app/themes.dart';
 
 void main() async {
   tz.initializeTimeZones();
@@ -30,9 +30,9 @@ void main() async {
   );
   runApp(
     MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'DroidArabicKufi', // 👈 default font
-      ),
+      theme: AppThemes.lightTheme,
+      darkTheme: AppThemes.darkTheme,
+      themeMode: ThemeMode.system,
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar')],
       localizationsDelegates: const [
@@ -93,7 +93,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: pages[currentIndex],
       bottomNavigationBar: SafeArea(
         child: Row(
@@ -122,13 +121,6 @@ class _MainScreenState extends State<MainScreen> {
               index: 2,
               currentIndex: currentIndex,
             ),
-            // ButtonWidget(
-            //   text: 'Profile',
-            //   icon: Icons.add_circle_outline_outlined,
-            //   onPressed: () => onNavTap(3),
-            //   index: 3,
-            //   currentIndex: currentIndex,
-            // ),
           ],
         ),
       ),
