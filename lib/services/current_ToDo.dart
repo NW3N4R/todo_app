@@ -38,6 +38,7 @@ class CurrentTodo {
   }
 
   static Future<int> createTodo(ToDoModel todo, BuildContext context) async {
+    if (_db == null) throw Exception('db is null');
     try {
       int st = await _db!.insert(
         _tableName,
@@ -46,9 +47,9 @@ class CurrentTodo {
       );
       if (st > 0) {
         if (context.mounted) {
-          banner.showbanner(
+          BannerToast.showbanner(
             context: context,
-            message: 'Todo Saved Successfuly!',
+            message: 'کردارەکەت سەرکەوتوو بوو',
             severity: Severity.info,
           );
         }
@@ -56,9 +57,9 @@ class CurrentTodo {
       return st;
     } catch (error) {
       if (context.mounted) {
-        banner.showbanner(
+        BannerToast.showbanner(
           context: context,
-          message: 'Failed to save todo: $error',
+          message: 'هەڵەیەک ڕوویدا',
           severity: Severity.error,
         );
       }
@@ -91,7 +92,7 @@ class CurrentTodo {
       var index = todos.indexWhere((t) => t.id == todo.id);
       if (index == -1) {
         if (context.mounted) {
-          banner.showbanner(
+          BannerToast.showbanner(
             context: context,
             message: 'Todo not found for update.',
             severity: Severity.error,
@@ -102,7 +103,7 @@ class CurrentTodo {
       todos.removeAt(index);
       todos.insert(index, todo);
       if (context.mounted) {
-        banner.showbanner(
+        BannerToast.showbanner(
           context: context,
           message: 'Todo Updated Successfully!',
           severity: Severity.info,
@@ -125,7 +126,7 @@ class CurrentTodo {
         todos.removeAt(index); // Remove the todo from the list
       }
       if (context.mounted) {
-        banner.showbanner(
+        BannerToast.showbanner(
           context: context,
           message: 'Todo Deleted Successfully!',
           severity: Severity.info,

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class AppColors {
   // Light Mode Colors
-  static final primaryLight = const Color.fromARGB(255, 249, 181, 78);
+  static final primaryLight = const Color.fromARGB(255, 242, 164, 46);
   static const backgroundLight = Color.fromARGB(255, 236, 237, 241);
   static const secondarybackgroundLight = Color.fromARGB(255, 224, 223, 223);
   static const textFieldBgLight = Color.fromARGB(69, 206, 206, 206);
@@ -12,35 +12,13 @@ class AppColors {
   static const lightGreen = Color.fromARGB(255, 68, 214, 92);
 
   // Dark Mode Colors
-  static final primaryDark = const Color.fromARGB(255, 139, 208, 118);
+  static final primaryDark = const Color.fromARGB(255, 251, 223, 103);
   static const backgroundDark = Color.fromARGB(255, 21, 23, 32);
   static const secondarybackgroundDark = Color.fromARGB(255, 50, 54, 69);
   static const darkBlue = Color.fromARGB(255, 34, 143, 190);
   static const darkYellow = Color.fromARGB(255, 251, 223, 103);
   static const darkOrange = Color.fromARGB(255, 235, 129, 73);
-  static const darkGreen = Color.fromARGB(255, 131, 189, 61);
-
-  static const List<Color> primaryLightColors = [
-    Color.fromARGB(255, 242, 185, 99),
-    Color.fromARGB(255, 232, 131, 250),
-    Colors.blue,
-  ];
-  static List<Color> secondaryLightColors = [
-    Colors.purple,
-    Colors.blue,
-    Colors.orange,
-  ];
-
-  static const List<Color> primaryDarkColors = [
-    Color.fromARGB(255, 102, 10, 94),
-    Color.fromARGB(255, 1, 93, 36),
-    Color.fromARGB(255, 1, 88, 159),
-  ];
-  static List<Color> secondaryDarkColors = [
-    Color.fromARGB(255, 79, 1, 93),
-    Color.fromARGB(255, 1, 52, 94),
-    Color.fromARGB(255, 102, 10, 94),
-  ];
+  static const darkGreen = Color.fromARGB(255, 153, 210, 82);
 }
 
 class AppThemes {
@@ -106,11 +84,11 @@ class AppThemes {
     ),
     scaffoldBackgroundColor: AppColors.backgroundDark,
     textTheme: const TextTheme(
-      displayLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
+      // displayLarge: TextStyle(
+      //   fontSize: 32,
+      //   fontWeight: FontWeight.bold,
+      //   color: Colors.white,
+      // ),
       bodySmall: TextStyle(
         fontSize: 14,
         color: Colors.white60,
@@ -144,6 +122,7 @@ class AppThemes {
     ),
     inputDecorationTheme: InputDecorationTheme(
       fillColor: Color.fromARGB(50, 0, 0, 0),
+
       labelStyle: TextStyle(color: Colors.white.withAlpha(147)),
       hintStyle: TextStyle(color: Colors.grey),
     ),

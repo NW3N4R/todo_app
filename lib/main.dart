@@ -4,6 +4,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
+import 'package:todo_app/pages/new_todo.dart';
 import 'package:todo_app/pages/todos.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -62,7 +63,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-int currentIndex = 0;
+int currentIndex = 1;
 
 class _MainScreenState extends State<MainScreen> {
   void onNavTap(int index) {
@@ -72,10 +73,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> pages = [
-    Home(),
-    TodoView(key: ValueKey('overDue')),
-    TodoView(key: ValueKey('active')),
-    TodoView(key: ValueKey('completed')),
+    NewTodo(key: const ValueKey(0)),
+    Home(key: const ValueKey(0)),
+    TodoView(key: const ValueKey(0)),
   ];
   String? selectedValue = 'accending';
 
@@ -95,7 +95,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[currentIndex],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        child: pages[currentIndex],
+      ),
       bottomNavigationBar: SafeArea(
         child: Row(
           mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
@@ -104,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             ButtonWidget(
               text: 'Home',
-              icon: Icons.home,
+              icon: Icons.add,
               onPressed: () => onNavTap(0),
               index: 0,
               currentIndex: currentIndex,
@@ -112,24 +117,17 @@ class _MainScreenState extends State<MainScreen> {
 
             ButtonWidget(
               text: 'Home',
-              icon: Icons.close,
+              icon: Icons.home,
               onPressed: () => onNavTap(1),
               index: 1,
               currentIndex: currentIndex,
             ),
-            ButtonWidget(
-              text: 'Home',
-              icon: Icons.timer_sharp,
-              onPressed: () => onNavTap(2),
-              index: 2,
-              currentIndex: currentIndex,
-            ),
 
             ButtonWidget(
-              text: 'Completed',
-              icon: Icons.done,
-              onPressed: () => onNavTap(3),
-              index: 3,
+              text: 'Home',
+              icon: Icons.list,
+              onPressed: () => onNavTap(2),
+              index: 2,
               currentIndex: currentIndex,
             ),
           ],

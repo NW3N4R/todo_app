@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/themes.dart';
 
@@ -38,18 +39,33 @@ Future<String?> pickTime(BuildContext context) async {
   return '$hour12:${time.minute} $period';
 }
 
-InputDecoration getInputStyle(String hint, BuildContext context) {
+InputDecoration getInputStyle(
+  String hint,
+  BuildContext context, {
+  IconData? prefixIcon,
+  IconData? suffixIcon,
+  VoidCallback? onSuffixTap,
+}) {
   return InputDecoration(
     filled: true,
     fillColor: AppThemes.getSecondaryBg(context),
+
     floatingLabelBehavior: FloatingLabelBehavior.never,
+    prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+    suffixIcon: suffixIcon != null
+        ? IconButton(onPressed: onSuffixTap, icon: Icon(suffixIcon))
+        : null,
     labelStyle: TextStyle(
       fontWeight: FontWeight.w400,
       fontFamily: 'DroidArabicKufi',
       fontSize: 18, // Use the custom font
     ),
     hint: Text(hint),
-    errorStyle: TextStyle(color: Colors.black54),
+    errorStyle: TextStyle(
+      color: const Color.fromARGB(255, 159, 98, 98),
+      fontSize: 12,
+      fontWeight: FontWeight.w100,
+    ),
     enabledBorder: OutlineInputBorder(
       // Border radius for enabled state
       borderSide: BorderSide(
@@ -67,18 +83,24 @@ InputDecoration getInputStyle(String hint, BuildContext context) {
         color: Colors.transparent,
       ), // Border color for focused state
     ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.transparent),
+    ),
   );
 }
 
 Widget getFormField(
   String label,
-  String hint,
   TextEditingController ctor,
   BuildContext context,
   FormFieldValidator validation, {
+  String? hint,
   InputDecoration? style,
   bool readOnly = false,
   GestureTapCallback? onTap,
+  IconData? prefixIcon,
+  IconData? suffixIcon,
+  VoidCallback? onPostTap,
 }) {
   return Container(
     margin: EdgeInsets.symmetric(vertical: 8),
@@ -91,7 +113,16 @@ Widget getFormField(
           readOnly: readOnly,
           controller: ctor,
           onTap: onTap,
-          decoration: style ?? getInputStyle(hint, context),
+          style: Theme.of(context).textTheme.bodyMedium,
+          decoration:
+              style ??
+              getInputStyle(
+                hint ?? label,
+                context,
+                suffixIcon: suffixIcon,
+                prefixIcon: prefixIcon,
+                onSuffixTap: onPostTap,
+              ),
           validator: validation,
         ),
       ],
@@ -105,9 +136,9 @@ Widget getDropDown(
   List<DropdownMenuItem<Object>> items,
   Object initialValue,
   BuildContext context,
-  ValueChanged onTap,
-  FormFieldValidator validation,
-) {
+  ValueChanged onTap, {
+  IconData? prefixIcon,
+}) {
   return Container(
     margin: EdgeInsets.symmetric(vertical: 8),
     child: Column(
@@ -117,8 +148,10 @@ Widget getDropDown(
         SizedBox(height: 5),
         DropdownButtonFormField(
           items: items,
-          decoration: getInputStyle('زەروریەت', context),
-          validator: validation,
+          decoration: getInputStyle(
+            'زەروریەت',
+            context,
+          ).copyWith(prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null),
           initialValue: initialValue, // Default value
           onChanged: onTap,
         ),
@@ -130,6 +163,7 @@ Widget getDropDown(
 BoxDecoration getContainerStyleAsInput(BuildContext context) {
   return BoxDecoration(
     color: AppThemes.getPrimaryColor(context).withAlpha(50),
+
     borderRadius: BorderRadius.circular(8.0),
     border: Border.all(color: AppThemes.getPrimaryColor(context)),
   );
@@ -141,20 +175,23 @@ Widget primaryButton(
   BuildContext context, {
   IconData? icon,
 }) {
-  return ElevatedButton.icon(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppThemes.getPrimaryColor(context),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-    ),
-    icon: Icon(icon ?? Icons.check, color: Colors.white),
-    label: Text(
-      text,
-      style: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontFamily: 'DroidArabicKufi',
-        fontSize: 16,
-        color: Colors.white,
+  return Container(
+    margin: EdgeInsets.symmetric(vertical: 12),
+    child: ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppThemes.getPrimaryColor(context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      ),
+      icon: Icon(icon ?? Icons.check, color: Colors.black),
+      label: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontFamily: 'DroidArabicKufi',
+          fontSize: 16,
+          color: Colors.black,
+        ),
       ),
     ),
   );

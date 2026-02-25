@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+
 import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/current_ToDo.dart';
 import 'package:todo_app/models/formmodel.dart';
-import 'package:todo_app/themes.dart';
 
 class UpdateTodo extends StatefulWidget {
   final ToDoModel modelToUpdate;
@@ -42,6 +38,12 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
     _selectedDays = todo.repeatingDays != null
         ? todo.repeatingDays!.split(',').map((day) => day.trim()).toList()
         : [];
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.selectWhere((item) {
+        return todo.repeatingDays!.split(',').contains(item.label);
+      });
+    });
     super.initState();
   }
 
@@ -62,10 +64,7 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
       );
       CurrentTodo.updateTodo(todo, context);
       // await scheduleNotification(todo);
-
-      // if (await CurrentTodo.createTodo(todo, context) > 0) {
-      //   formKey.currentState!.reset();
-      // }
+      print(_selectedDays.join(','));
     }
   }
 
@@ -97,27 +96,18 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                       children: [
                         getFormField(
                           'ناوی ئەرک',
-                          'ناوی ئەرکەکەت',
                           titleController,
                           context,
-                          (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'تکایە ناوی ئەرک بنووسە';
-                            }
-                            return null;
-                          },
+                          formValidator('تکایە ناوی ئەرک بنووسە'),
+                          prefixIcon: Icons.task,
+                          // prefixIcon: Icons.local_activity,
                         ),
                         getFormField(
                           'وەسفی ئەرک',
-                          'وەسفی ئەرک',
                           descriptionController,
                           context,
-                          (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'تکایە وەسفی ئەرک بنووسە';
-                            }
-                            return null;
-                          },
+                          formValidator('تکایە وەسفی ئەرک بنووسە'),
+                          prefixIcon: Icons.description,
                         ),
                         getDropDown(
                           'زەروریەت',
@@ -135,15 +125,9 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                               priority = value!;
                             });
                           },
-                          (value) {
-                            if (value == null) {
-                              return 'تکایە پریۆریتێک دیاری بکە';
-                            }
-                            return null;
-                          },
+                          prefixIcon: Icons.label_important,
                         ),
                         getFormField(
-                          'بەرواری ئاگەدار کردنەوە',
                           'بەرواری ئاگەدار کردنەوە',
                           selectedDateController,
                           context,
@@ -162,6 +146,7 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                               },
                               icon: Icon(Icons.clear),
                             ),
+                            prefixIcon: Icon(Icons.access_time_filled),
                           ),
                           readOnly: true,
                           onTap: () async {
@@ -172,67 +157,24 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                         ),
                         getFormField(
                           'کاتی ئاگەدار کردنەوە',
-                          'کاتی ئاگەدار کردنەوە',
                           selectedTimeController,
                           context,
-                          (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'تکایە کاتی ئاگەدارکردنەوە دیاری بکە';
-                            }
-                            return null;
-                          },
+                          formValidator('تکایە کاتی ئاگەدارکردنەوە دیاری بکە'),
                           readOnly: true,
                           onTap: () async {
                             selectedTimeController.text =
                                 await pickTime(context) ?? '';
                           },
+                          prefixIcon: Icons.access_time_filled_sharp,
                         ),
-                        MultiSelectDialogField<String>(
-                          initialValue: _selectedDays,
-                          selectedItemsTextStyle: TextStyle(
-                            color: AppThemes.getPrimaryColor(context),
-                            fontWeight: FontWeight.bold,
-                          ),
-
-                          selectedColor: AppThemes.getPrimaryColor(
-                            context,
-                          ).withAlpha(50),
-                          chipDisplay: MultiSelectChipDisplay.none(),
-                          buttonText: Text('ئاگادارکردنەوە لە ڕۆژەکانی هەفتە'),
-                          buttonIcon: Icon(Icons.calendar_month),
-                          items: days
-                              .map((day) => MultiSelectItem(day, day))
-                              .toList(),
-                          listType: MultiSelectListType.CHIP,
-                          title: Text('ڕۆژەکانی هەفتە'),
-                          validator: (value) {
-                            if (selectedDateController.text == '' &&
-                                _selectedDays.isEmpty) {
-                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
-                            }
-
-                            return null;
-                          },
-                          onConfirm: (values) {
-                            _selectedDays = values;
-                            // print("Selected: $_selectedDays");
-                          },
-                          confirmText: Text(
-                            'وەرگرتن',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                          cancelText: Text(
-                            'پاشگەزبونەوە',
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.secondary, // Dynamic Secondary
-                            ),
-                          ),
-                          decoration: getContainerStyleAsInput(context),
-                        ),
+                        SizedBox(height: 15),
+                        daySelector(context, (selectedItems) {
+                          setState(() {
+                            _selectedDays = selectedItems
+                                .map((x) => x.toString())
+                                .toList();
+                          });
+                        }),
                       ],
                     ),
                   ),

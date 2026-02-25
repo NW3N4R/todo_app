@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/models/formModel.dart';
@@ -40,7 +41,6 @@ class _NewTodoState extends State<NewTodo> with FormModel {
       );
       CurrentTodo.createTodo(todo, context);
       // await scheduleNotification(todo);
-
       if (await CurrentTodo.createTodo(todo, context) > 0) {
         formKey.currentState!.reset();
       }
@@ -51,6 +51,7 @@ class _NewTodoState extends State<NewTodo> with FormModel {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: Text(
           'ئەرکێکی نوێ',
           style: TextStyle(
@@ -81,27 +82,18 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                           children: [
                             getFormField(
                               'ناوی ئەرک',
-                              'ناوی ئەرکەکەت',
                               titleController,
                               context,
-                              (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'تکایە ناوی ئەرک بنووسە';
-                                }
-                                return null;
-                              },
+                              formValidator('تکایە ناوی ئەرک بنووسە'),
+                              prefixIcon: Icons.task,
+                              // prefixIcon: Icons.local_activity,
                             ),
                             getFormField(
                               'وەسفی ئەرک',
-                              'وەسفی ئەرک',
                               descriptionController,
                               context,
-                              (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'تکایە وەسفی ئەرک بنووسە';
-                                }
-                                return null;
-                              },
+                              formValidator('تکایە وەسفی ئەرک بنووسە'),
+                              prefixIcon: Icons.description,
                             ),
                             getDropDown(
                               'زەروریەت',
@@ -119,15 +111,9 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                                   priority = value!;
                                 });
                               },
-                              (value) {
-                                if (value == null) {
-                                  return 'تکایە پریۆریتێک دیاری بکە';
-                                }
-                                return null;
-                              },
+                              prefixIcon: Icons.label_important,
                             ),
                             getFormField(
-                              'بەرواری ئاگەدار کردنەوە',
                               'بەرواری ئاگەدار کردنەوە',
                               selectedDateController,
                               context,
@@ -146,6 +132,7 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                                   },
                                   icon: Icon(Icons.clear),
                                 ),
+                                prefixIcon: Icon(Icons.access_time_filled),
                               ),
                               readOnly: true,
                               onTap: () async {
@@ -156,68 +143,26 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                             ),
                             getFormField(
                               'کاتی ئاگەدار کردنەوە',
-                              'کاتی ئاگەدار کردنەوە',
                               selectedTimeController,
                               context,
-                              (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'تکایە کاتی ئاگەدارکردنەوە دیاری بکە';
-                                }
-                                return null;
-                              },
+                              formValidator(
+                                'تکایە کاتی ئاگەدارکردنەوە دیاری بکە',
+                              ),
                               readOnly: true,
                               onTap: () async {
                                 selectedTimeController.text =
                                     await pickTime(context) ?? '';
                               },
+                              prefixIcon: Icons.access_time_filled_sharp,
                             ),
-
-                            MultiSelectDialogField<String>(
-                              selectedItemsTextStyle: TextStyle(
-                                color: AppThemes.getPrimaryColor(context),
-                                fontWeight: FontWeight.bold,
-                              ),
-                              selectedColor: AppThemes.getPrimaryColor(
-                                context,
-                              ).withAlpha(50),
-                              chipDisplay: MultiSelectChipDisplay.none(),
-                              buttonText: Text(
-                                'ئاگادارکردنەوە لە ڕۆژەکانی هەفتە',
-                              ),
-                              buttonIcon: Icon(Icons.calendar_month),
-                              items: days
-                                  .map((day) => MultiSelectItem(day, day))
-                                  .toList(),
-                              listType: MultiSelectListType.CHIP,
-                              title: Text('ڕۆژەکانی هەفتە'),
-                              validator: (value) {
-                                if (selectedDateController.text == '' &&
-                                    _selectedDays.isEmpty) {
-                                  return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
-                                }
-
-                                return null;
-                              },
-                              onConfirm: (values) {
-                                _selectedDays = values;
-                                // print("Selected: $_selectedDays");
-                              },
-                              confirmText: Text(
-                                'وەرگرتن',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              cancelText: Text(
-                                'پاشگەزبونەوە',
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary, // Dynamic Secondary
-                                ),
-                              ),
-                              decoration: getContainerStyleAsInput(context),
-                            ),
+                            SizedBox(height: 15),
+                            daySelector(context, (selectedItems) {
+                              setState(() {
+                                _selectedDays = selectedItems
+                                    .map((x) => x.toString())
+                                    .toList();
+                              });
+                            }),
                           ],
                         ),
                       ),

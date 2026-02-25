@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/models/homemodel.dart';
 import 'package:todo_app/pages/new_todo.dart';
+import 'package:todo_app/services/current_ToDo.dart';
 import 'package:todo_app/themes.dart';
 
 class Home extends StatefulWidget {
@@ -9,7 +11,23 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with HomeModel {
+  @override
+  void initState() {
+    initiateDb();
+    super.initState();
+  }
+
+  var filteredTodos = [];
+
+  void initiateDb() async {
+    await CurrentTodo.openDB();
+    await load();
+    setState(() {
+      filteredTodos = todosOfThisWeek();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -20,13 +38,6 @@ class _HomeState extends State<Home> {
           scrolledUnderElevation: 0,
           title: Text('داشبۆرد', style: Theme.of(context).textTheme.bodyLarge),
           actions: [
-            IconButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NewTodo()),
-              ),
-              icon: Icon(Icons.mode),
-            ),
             IconButton(onPressed: () {}, icon: Icon(Icons.wrap_text_rounded)),
           ],
         ),
@@ -48,10 +59,9 @@ class _HomeState extends State<Home> {
                     crossAxisSpacing: 10,
                   ),
                   children: [
-                    detailsCard('ئەرکە تەواو بووەکان', 8),
-                    detailsCard('ئەرکە تەواو نە بووەکان', 4.3),
-                    detailsCard('ئەرکە تەواو بەسەر چووەکان', 12),
-                    detailsCard('ئەرکە تەواو بەسەر چووەکان', 18),
+                    detailsCard('ئەرکە تەواو بووەکان', completedTodos()),
+                    detailsCard('ئەرکە تەواو نە بووەکان', activeTodos()),
+                    detailsCard('ئەرکە بەسەر چووەکان', overDueTodos()),
                   ],
                 ),
               ),
@@ -62,19 +72,13 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 10),
               Expanded(
-                child: GridView(
+                child: ListView.builder(
                   padding: EdgeInsets.zero,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    childAspectRatio: 4.2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 0,
-                  ),
-                  children: [
-                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
-                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
-                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
-                  ],
+                  itemCount: filteredTodos.length,
+                  itemBuilder: (context, index) {
+                    final todo = filteredTodos[index];
+                    return latestCard(todo.title, todo.description);
+                  },
                 ),
               ),
             ],
@@ -124,7 +128,7 @@ class _HomeState extends State<Home> {
                 Icon(Icons.today_outlined, color: Colors.black, size: 54),
                 SizedBox(width: 20),
                 Text(
-                  '4',
+                  activeTodos().toString(),
                   style: TextStyle(
                     fontSize: 54,
                     color: Colors.black,
@@ -135,7 +139,7 @@ class _HomeState extends State<Home> {
               ],
             ),
             Text(
-              '4 ئەرک ماوە لە8 دانە',
+              '${activeTodos()} ئەر ماوە لە ${allTodos.length}',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,
@@ -146,7 +150,7 @@ class _HomeState extends State<Home> {
             SizedBox(
               height: 10,
               child: LinearProgressIndicator(
-                value: 0.45,
+                value: remainingTodos(),
                 minHeight: 3,
                 borderRadius: BorderRadius.circular(8),
                 backgroundColor: AppThemes.getPrimaryBg(context).withAlpha(50),
@@ -194,6 +198,7 @@ class _HomeState extends State<Home> {
   Widget latestCard(String label, String caption) {
     return Container(
       padding: EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
         color: AppThemes.getSecondaryBg(context),
         borderRadius: BorderRadius.circular(18),
