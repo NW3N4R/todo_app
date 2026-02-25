@@ -88,8 +88,10 @@ class _MainScreenState extends State<MainScreen> {
 
   void request() async {
     await ensureNotifPermission();
-    final locale = Localizations.localeOf(context);
-    debugPrint('LOCALE: $locale');
+    if (mounted) {
+      final locale = Localizations.localeOf(context);
+      debugPrint('LOCALE: $locale');
+    }
   }
 
   @override

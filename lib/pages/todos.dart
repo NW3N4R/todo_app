@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:todo_app/models/formModel.dart';
 import 'package:todo_app/models/searchmodel.dart';
-import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/update.dart';
-import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/services/todoservice.dart';
 import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/themes.dart';
 
@@ -169,7 +167,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                   await search();
                 },
                 child: ListView.builder(
-                  itemCount: viewList?.length,
+                  itemCount: viewList.length,
                   itemBuilder: (context, index) {
                     final todo = viewList[index];
                     return Dismissible(
@@ -177,9 +175,9 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                       key: ValueKey(viewList[index].id), // Unique key per item
                       onDismissed: (direction) {
                         setState(() {
-                          viewList?.removeAt(index); // remove from list
+                          viewList.removeAt(index); // remove from list
                         });
-                        CurrentTodo.deleteTodo(
+                        TodoService.deleteTodo(
                           todo.id,
                           context,
                         ); // remove from DB
@@ -199,7 +197,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                           border: Border(
                             left: BorderSide(
                               color: cardBackColor(
-                                viewList![index].priority,
+                                viewList[index].priority,
                                 context,
                               ),
                               width: 4,
@@ -225,9 +223,9 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                           ),
                           onLongPress: () {
                             setState(() {
-                              viewList![index].isCompleted =
-                                  !viewList![index].isCompleted;
-                              CurrentTodo.updateTodo(viewList![index], context);
+                              viewList[index].isCompleted =
+                                  !viewList[index].isCompleted;
+                              TodoService.updateTodo(viewList[index], context);
                             });
                             load();
                           },
@@ -236,7 +234,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    UpdateTodo(viewList![index]),
+                                    UpdateTodo(viewList[index]),
                               ),
                             ),
                           },

@@ -1,10 +1,10 @@
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/services/todoservice.dart';
 
 mixin HomeModel {
   List<ToDoModel> allTodos = [];
   Future load() async {
-    allTodos = await CurrentTodo.readTodos();
+    allTodos = await TodoService.readTodos();
   }
 
   double remainingTodos() {

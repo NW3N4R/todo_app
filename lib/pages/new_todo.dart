@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:multi_dropdown/multi_dropdown.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/models/formModel.dart';
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/services/current_ToDo.dart';
-import 'package:todo_app/themes.dart';
+import 'package:todo_app/services/todoservice.dart';
 
 class NewTodo extends StatefulWidget {
   const NewTodo({super.key});
@@ -39,9 +35,9 @@ class _NewTodoState extends State<NewTodo> with FormModel {
         repeatingDays: _selectedDays.join(','),
         // everyDate: everyDate,
       );
-      CurrentTodo.createTodo(todo, context);
+      TodoService.createTodo(todo, context);
       // await scheduleNotification(todo);
-      if (await CurrentTodo.createTodo(todo, context) > 0) {
+      if (await TodoService.createTodo(todo, context) > 0) {
         formKey.currentState!.reset();
       }
     }

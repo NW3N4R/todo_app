@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/homemodel.dart';
-import 'package:todo_app/pages/new_todo.dart';
-import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/services/todoservice.dart';
 import 'package:todo_app/themes.dart';
 
 class Home extends StatefulWidget {
@@ -21,7 +20,7 @@ class _HomeState extends State<Home> with HomeModel {
   var filteredTodos = [];
 
   void initiateDb() async {
-    await CurrentTodo.openDB();
+    await TodoService.openDB();
     await load();
     setState(() {
       filteredTodos = todosOfThisWeek();

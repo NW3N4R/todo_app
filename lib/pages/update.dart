@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'package:todo_app/custom_widgets/styles.dart';
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/services/todoservice.dart';
 import 'package:todo_app/models/formmodel.dart';
 
 class UpdateTodo extends StatefulWidget {
@@ -62,9 +62,8 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
         repeatingDays: _selectedDays.join(','),
         // everyDate: everyDate,
       );
-      CurrentTodo.updateTodo(todo, context);
+      TodoService.updateTodo(todo, context);
       // await scheduleNotification(todo);
-      print(_selectedDays.join(','));
     }
   }
 

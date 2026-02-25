@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 
 List<ToDoModel> todos = [];
 
-class CurrentTodo {
+class TodoService {
   static final String _dbName = 'todo.db';
   static final String _tableName = 'todos';
   static Database? _db;
@@ -121,7 +121,9 @@ class CurrentTodo {
     }
     try {
       await _db!.delete(_tableName, where: 'id = ?', whereArgs: [id]);
-      var index = todos.indexWhere((todo) => todo.id == id.toString());
+      var index = todos.indexWhere(
+        (todo) => todo.id.toString() == id.toString(),
+      );
       if (index != -1) {
         todos.removeAt(index); // Remove the todo from the list
       }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/services/current_ToDo.dart';
+import 'package:todo_app/services/todoservice.dart';
 
 mixin SearchModel {
   List<ToDoModel> viewList = [];
@@ -10,7 +10,7 @@ mixin SearchModel {
   List<String> specificDays = [];
   DateTime? specificDate;
   Future<List<ToDoModel>> search() async {
-    viewList = await CurrentTodo.readTodos();
+    viewList = await TodoService.readTodos();
     String txt = textSearcher.text;
 
     viewList = viewList.where((x) {
