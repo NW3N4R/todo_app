@@ -4,6 +4,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:todo_app/custom_widgets/navigator_item.dart';
 import 'package:todo_app/pages/home.dart';
+import 'package:todo_app/pages/todos.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -71,9 +72,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> pages = [
-    Home(key: ValueKey('overDue')),
-    Home(key: ValueKey('active')),
-    Home(key: ValueKey('completed')),
+    Home(),
+    TodoView(key: ValueKey('overDue')),
+    TodoView(key: ValueKey('active')),
+    TodoView(key: ValueKey('completed')),
   ];
   String? selectedValue = 'accending';
 
@@ -102,23 +104,32 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             ButtonWidget(
               text: 'Home',
-              icon: Icons.close,
+              icon: Icons.home,
               onPressed: () => onNavTap(0),
               index: 0,
               currentIndex: currentIndex,
             ),
+
             ButtonWidget(
               text: 'Home',
-              icon: Icons.timer_sharp,
+              icon: Icons.close,
               onPressed: () => onNavTap(1),
               index: 1,
               currentIndex: currentIndex,
             ),
             ButtonWidget(
-              text: 'Completed',
-              icon: Icons.done,
+              text: 'Home',
+              icon: Icons.timer_sharp,
               onPressed: () => onNavTap(2),
               index: 2,
+              currentIndex: currentIndex,
+            ),
+
+            ButtonWidget(
+              text: 'Completed',
+              icon: Icons.done,
+              onPressed: () => onNavTap(3),
+              index: 3,
               currentIndex: currentIndex,
             ),
           ],

@@ -33,11 +33,11 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
     priority = todo.priority;
     selectedDateController.text = todo.remindingDate != null
         ? DateFormat('dd-MM-yyyy').format(todo.remindingDate!)
-        : selectDateHolder;
+        : '';
 
     selectedTimeController.text = todo.remindingDate != null
         ? DateFormat('hh:mm a').format(todo.remindingDate!)
-        : selectTimeHolder;
+        : '';
 
     _selectedDays = todo.repeatingDays != null
         ? todo.repeatingDays!.split(',').map((day) => day.trim()).toList()
@@ -73,9 +73,8 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(
-          'ئەرکێکی نوێ دروست بکە',
+          'نوێ کردنەوە',
           style: TextStyle(
             fontWeight: FontWeight.w200,
             fontSize: 20.0,
@@ -96,97 +95,98 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                        TextFormField(
-                          controller: titleController,
-                          decoration: getStyle('ناوی ئەرک', context),
-                          validator: (value) {
+                        getFormField(
+                          'ناوی ئەرک',
+                          'ناوی ئەرکەکەت',
+                          titleController,
+                          context,
+                          (value) {
                             if (value == null || value.isEmpty) {
                               return 'تکایە ناوی ئەرک بنووسە';
                             }
                             return null;
                           },
                         ),
-                        SizedBox(height: 14),
-                        TextFormField(
-                          controller: descriptionController,
-                          decoration: getStyle('وەسفی ئەرک', context),
-                          validator: (value) {
+                        getFormField(
+                          'وەسفی ئەرک',
+                          'وەسفی ئەرک',
+                          descriptionController,
+                          context,
+                          (value) {
                             if (value == null || value.isEmpty) {
                               return 'تکایە وەسفی ئەرک بنووسە';
                             }
                             return null;
                           },
                         ),
-                        SizedBox(height: 14),
-                        DropdownButtonFormField(
-                          items: TodoPriority.values.map((p) {
+                        getDropDown(
+                          'زەروریەت',
+                          'گرنگی ئەرکەکەت',
+                          TodoPriority.values.map((p) {
                             return DropdownMenuItem(
                               value: p,
                               child: Text(p.ku),
                             );
                           }).toList(),
-                          decoration: getStyle('زەروریەت', context),
-                          validator: (value) {
+                          priority,
+                          context,
+                          (value) {
+                            setState(() {
+                              priority = value!;
+                            });
+                          },
+                          (value) {
                             if (value == null) {
                               return 'تکایە پریۆریتێک دیاری بکە';
                             }
                             return null;
                           },
-
-                          initialValue: priority, // Default value
-                          onChanged: (value) {
-                            setState(() {
-                              priority = value!;
-                            });
-                          },
                         ),
-                        SizedBox(height: 14),
-                        TextFormField(
-                          controller: selectedDateController,
-                          readOnly: true,
-                          decoration: getStyle('بەروار', context).copyWith(
+                        getFormField(
+                          'بەرواری ئاگەدار کردنەوە',
+                          'بەرواری ئاگەدار کردنەوە',
+                          selectedDateController,
+                          context,
+                          (value) {
+                            if (value == '' && _selectedDays.isEmpty) {
+                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
+                            }
+                            return null;
+                          },
+                          style: getInputStyle('بەروار', context).copyWith(
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  selectedDateController.text =
-                                      selectDateHolder;
+                                  selectedDateController.text = '';
                                 });
                               },
                               icon: Icon(Icons.clear),
                             ),
                           ),
+                          readOnly: true,
                           onTap: () async {
                             selectedDateController.text = await pickDate(
                               context,
                             );
                           },
-                          validator: (value) {
-                            if (value == selectDateHolder &&
-                                _selectedDays.isEmpty) {
-                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
-                            }
-                            return null;
-                          },
                         ),
-                        SizedBox(height: 14),
-                        TextFormField(
-                          controller: selectedTimeController,
-                          readOnly: true,
-                          decoration: getStyle('کات', context),
-                          onTap: () async {
-                            selectedTimeController.text =
-                                await pickTime(context) ?? '';
-                          },
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty ||
-                                value == selectTimeHolder) {
+                        getFormField(
+                          'کاتی ئاگەدار کردنەوە',
+                          'کاتی ئاگەدار کردنەوە',
+                          selectedTimeController,
+                          context,
+                          (value) {
+                            if (value == null || value.isEmpty) {
                               return 'تکایە کاتی ئاگەدارکردنەوە دیاری بکە';
                             }
                             return null;
                           },
+                          readOnly: true,
+                          onTap: () async {
+                            selectedTimeController.text =
+                                await pickTime(context) ?? '';
+                          },
                         ),
-                        SizedBox(height: 14),
                         MultiSelectDialogField<String>(
                           initialValue: _selectedDays,
                           selectedItemsTextStyle: TextStyle(
@@ -206,8 +206,7 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                           listType: MultiSelectListType.CHIP,
                           title: Text('ڕۆژەکانی هەفتە'),
                           validator: (value) {
-                            if (selectedDateController.text ==
-                                    selectDateHolder &&
+                            if (selectedDateController.text == '' &&
                                 _selectedDays.isEmpty) {
                               return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
                             }

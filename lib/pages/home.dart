@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:todo_app/models/formModel.dart';
-import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/pages/update.dart';
-import 'package:todo_app/services/current_ToDo.dart';
-import 'package:todo_app/custom_widgets/shared_appbar.dart';
-import 'package:todo_app/custom_widgets/styles.dart';
+import 'package:todo_app/pages/new_todo.dart';
+import 'package:todo_app/themes.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,157 +9,212 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with FormModel {
-  List<ToDoModel> fetchedTodos = [];
-  Future setupdb() async {
-    await CurrentTodo.openDB();
-    await CurrentTodo.readTodos();
-    setState(() {
-      final now = DateTime.now();
-      final todayName = DateFormat('EEEE').format(now); // e.g., "Monday"
-
-      fetchedTodos = todos.where((t) {
-        var overDue =
-            !t.isCompleted &&
-            (t.remindingDate != null && t.remindingDate!.isBefore(now));
-
-        var key = widget.key.toString();
-        if (key.contains('overDue')) {
-          return overDue;
-        } else if (key.contains('completed')) {
-          return t.isCompleted;
-        } else if (key.contains('active')) {
-          return !t.isCompleted &&
-                  (t.remindingDate != null
-                      ? t.remindingDate!.isAfter(now)
-                      : false) ||
-              ((t.repeatingDays != null && t.repeatingDays!.isNotEmpty) &&
-                  matchingDays(t.repeatingDays!).contains(todayName));
-        }
-        throw Exception('Unknown tab key: $key');
-      }).toList();
-
-      // REMOVED: todos = fetchedTodos; <--- This was your bug!
-    });
-  }
-
-  void search(String text) async {
-    if (mounted) {
-      setState(() {
-        fetchedTodos = [];
-      });
-      await setupdb();
-      setState(() {
-        fetchedTodos = fetchedTodos
-            .where(
-              (t) =>
-                  t.title.toLowerCase().contains(text.toLowerCase()) ||
-                  t.description.toLowerCase().contains(text.toLowerCase()),
-            )
-            .toList();
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setupdb();
-  }
-
-  double deleteIconSize = 20;
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: SharedAppbar.myAppBar(search, context),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await Future.delayed(
-              Duration(seconds: 1),
-            ); // Simulate a delay for refreshing
-            setupdb();
-          },
-          child: ListView.builder(
-            itemCount: fetchedTodos.length,
-            itemBuilder: (context, index) {
-              final todo = fetchedTodos[index];
-              return Dismissible(
-                direction: DismissDirection.endToStart,
-                onUpdate: (details) {
-                  setState(() {
-                    // 20 is the base size, 80 is the growth potential
-                    deleteIconSize = 20 + (details.progress * 20);
-                  });
-
-                  // Optional: Add haptic feedback when it gets big enough
-                  if (details.reached && !details.previousReached) {
-                    HapticFeedback.mediumImpact();
-                  }
-                },
-                key: ValueKey(fetchedTodos[index].id), // Unique key per item
-                onDismissed: (direction) {
-                  setState(() {
-                    fetchedTodos.removeAt(index); // remove from list
-                  });
-                  CurrentTodo.deleteTodo(todo.id, context); // remove from DB
-                },
-                background: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(color: Colors.red),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                    size: deleteIconSize,
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          title: Text('داشبۆرد', style: Theme.of(context).textTheme.bodyLarge),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NewTodo()),
+              ),
+              icon: Icon(Icons.mode),
+            ),
+            IconButton(onPressed: () {}, icon: Icon(Icons.wrap_text_rounded)),
+          ],
+        ),
+        body: Container(
+          margin: EdgeInsets.only(top: 40),
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              progressCard(),
+              SizedBox(
+                height: 160,
+                child: GridView(
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 1.2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
                   ),
+                  children: [
+                    detailsCard('ئەرکە تەواو بووەکان', 8),
+                    detailsCard('ئەرکە تەواو نە بووەکان', 4.3),
+                    detailsCard('ئەرکە تەواو بەسەر چووەکان', 12),
+                    detailsCard('ئەرکە تەواو بەسەر چووەکان', 18),
+                  ],
                 ),
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: cardBackColor(
-                      fetchedTodos[index].priority,
-                      context,
-                    ).withAlpha(120),
-                    borderRadius: BorderRadius.circular(8),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'ئەرکەکانی ئەم هەفتەیە',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: GridView(
+                  padding: EdgeInsets.zero,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 4.2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 0,
                   ),
-                  child: InkWell(
-                    child: ListTile(
-                      title: Text(
-                        fetchedTodos[index].title,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      subtitle: Text(
-                        fetchedTodos[index].description,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    onLongPress: () {
-                      setState(() {
-                        fetchedTodos[index].isCompleted =
-                            !fetchedTodos[index].isCompleted;
-                        CurrentTodo.updateTodo(fetchedTodos[index], context);
-                      });
-                      setupdb();
-                    },
-                    onDoubleTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UpdateTodo(fetchedTodos[index]),
-                        ),
-                      ),
-                    },
-                  ),
+                  children: [
+                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
+                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
+                    latestCard('ناونیشانی ئەرک', 'پێناسەی ئەرک'),
+                  ],
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget progressCard() {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      padding: EdgeInsets.all(15),
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 16),
+      decoration: BoxDecoration(
+        color: AppThemes.getYellow(context),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ئەرکە ماوەکان',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppThemes.getPrimaryBg(context).withAlpha(30),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.timer_sharp, color: Colors.black),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Icon(Icons.today_outlined, color: Colors.black, size: 54),
+                SizedBox(width: 20),
+                Text(
+                  '4',
+                  style: TextStyle(
+                    fontSize: 54,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
+            Text(
+              '4 ئەرک ماوە لە8 دانە',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            SizedBox(
+              height: 10,
+              child: LinearProgressIndicator(
+                value: 0.45,
+                minHeight: 3,
+                borderRadius: BorderRadius.circular(8),
+                backgroundColor: AppThemes.getPrimaryBg(context).withAlpha(50),
+                valueColor: AlwaysStoppedAnimation(Colors.black87),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget detailsCard(String label, Object no) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppThemes.getSecondaryBg(context),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Spacer(),
+          Center(
+            child: Text(
+              no.toString(),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge!.copyWith(fontSize: 42),
+            ),
+          ),
+          Spacer(),
+          Text(
+            label,
+            softWrap: true,
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget latestCard(String label, String caption) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppThemes.getSecondaryBg(context),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge!.copyWith(fontSize: 20),
+          ),
+          Text(
+            caption,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall!.copyWith(fontSize: 18),
+          ),
+        ],
       ),
     );
   }

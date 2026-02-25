@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppColors {
   // Light Mode Colors
-  static final primaryLight = const Color.fromARGB(255, 5, 153, 239);
-  static const backgroundLight = Color.fromARGB(255, 251, 251, 251);
-  static const secondarybackgroundLight = Color.fromARGB(255, 255, 255, 255);
-  static const mutedTextLight = Color.fromARGB(255, 111, 111, 111);
+  static final primaryLight = const Color.fromARGB(255, 249, 181, 78);
+  static const backgroundLight = Color.fromARGB(255, 236, 237, 241);
+  static const secondarybackgroundLight = Color.fromARGB(255, 224, 223, 223);
   static const textFieldBgLight = Color.fromARGB(69, 206, 206, 206);
+  static const lightBlue = Colors.blue;
+  static const lightOrange = Color.fromARGB(255, 250, 188, 94);
+  static const lightGreen = Color.fromARGB(255, 68, 214, 92);
 
   // Dark Mode Colors
   static final primaryDark = const Color.fromARGB(255, 139, 208, 118);
-  static const backgroundDark = Color.fromARGB(255, 34, 37, 49);
-  static const secondarybackgroundDark = Color.fromARGB(100, 50, 54, 69);
-  // static const secondarybackgroundDark255 = Color.fromARGB(255, 32, 34, 42);
-  static const mutedTextDark = Color.fromARGB(255, 185, 185, 185);
-  static const textFieldBgDark = Color.fromARGB(50, 0, 0, 0);
+  static const backgroundDark = Color.fromARGB(255, 21, 23, 32);
+  static const secondarybackgroundDark = Color.fromARGB(255, 50, 54, 69);
+  static const darkBlue = Color.fromARGB(255, 34, 143, 190);
+  static const darkYellow = Color.fromARGB(255, 251, 223, 103);
+  static const darkOrange = Color.fromARGB(255, 235, 129, 73);
+  static const darkGreen = Color.fromARGB(255, 131, 189, 61);
 
   static const List<Color> primaryLightColors = [
     Color.fromARGB(255, 242, 185, 99),
@@ -48,13 +52,28 @@ class AppThemes {
       brightness: Brightness.light,
       primary: AppColors.primaryLight,
     ),
+
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: Colors.black,
       ),
-      bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        color: Colors.black87,
+        fontFamily: 'DroidArabicKufi',
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 18,
+        color: Colors.black,
+        fontFamily: 'DroidArabicKufi',
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 22,
+        color: Colors.black,
+        fontFamily: 'DroidArabicKufi',
+      ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
@@ -85,14 +104,29 @@ class AppThemes {
       brightness: Brightness.dark,
       primary: AppColors.primaryDark,
     ),
+    scaffoldBackgroundColor: AppColors.backgroundDark,
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
-      bodyMedium: TextStyle(fontSize: 16, color: Colors.white70),
-      bodyLarge: TextStyle(fontSize: 22, color: Colors.white),
+      bodySmall: TextStyle(
+        fontSize: 14,
+        color: Colors.white60,
+        fontFamily: 'DroidArabicKufi',
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 18,
+        color: Colors.white70,
+        fontFamily: 'DroidArabicKufi',
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 22,
+        color: Colors.white,
+        fontFamily: 'DroidArabicKufi',
+        fontWeight: FontWeight.w900,
+      ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
@@ -115,22 +149,6 @@ class AppThemes {
     ),
   );
 
-  static List<BoxShadow> lightShadow = [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: 0.08),
-      blurRadius: 12,
-      offset: const Offset(0, 4),
-    ),
-  ];
-  // Dark Mode Shadow: Darker and tighter (shadows are less visible in dark mode)
-  static List<BoxShadow> darkShadow = [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: 0.4),
-      blurRadius: 8,
-      offset: const Offset(0, 2),
-    ),
-  ];
-
   static Color getPrimaryBg(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -143,16 +161,25 @@ class AppThemes {
   }
 
   static Color getSecondaryBg(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return isDark
+    return isDarkMode(context)
         ? AppColors.secondarybackgroundDark
         : AppColors.secondarybackgroundLight;
   }
 
-  static Color mutedText(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? AppColors.mutedTextDark : AppColors.mutedTextLight;
+  static Color getYellow(BuildContext context) {
+    return isDarkMode(context) ? AppColors.darkYellow : AppColors.darkYellow;
+  }
+
+  static Color getOrange(BuildContext context) {
+    return isDarkMode(context) ? AppColors.darkOrange : AppColors.lightOrange;
+  }
+
+  static Color getBlue(BuildContext context) {
+    return isDarkMode(context) ? AppColors.darkBlue : AppColors.lightBlue;
+  }
+
+  static Color getGreen(BuildContext context) {
+    return isDarkMode(context) ? AppColors.darkGreen : AppColors.lightGreen;
   }
 
   static bool isDarkMode(BuildContext context) {

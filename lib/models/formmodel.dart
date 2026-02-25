@@ -10,8 +10,6 @@ mixin FormModel {
   final TextEditingController selectedDateController = TextEditingController();
   final TextEditingController selectedTimeController = TextEditingController();
   TodoPriority priority = TodoPriority.low; // Default priority
-  final String selectTimeHolder = 'کاتی ئاگەدارکردنەوە هەڵبژێرە';
-  final String selectDateHolder = 'بەرواری ئاگەدارکردنەوە هەڵبژێرە';
   final List<String> days = [
     'شەممە',
     'یەک شەممە',

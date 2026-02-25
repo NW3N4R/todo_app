@@ -23,16 +23,6 @@ class SharedAppbar {
               ),
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewTodo()),
-            ),
-            child: Text(
-              'ئەرکی نوێ',
-              style: TextStyle(fontWeight: FontWeight.w900),
-            ),
-          ),
         ],
       ),
     );

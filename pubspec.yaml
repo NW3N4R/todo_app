@@ -43,7 +43,8 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
-
+  assets:
+    - assets/
   fonts:
    - family: DroidArabicKufi
      fonts:
