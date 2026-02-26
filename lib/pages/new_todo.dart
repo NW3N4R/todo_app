@@ -51,8 +51,10 @@ class _NewTodoState extends State<NewTodo> with FormModel {
         todo.description,
         notifyingDate!,
       );
-      if (await TodoService.createTodo(todo, context) > 0) {
-        formKey.currentState!.reset();
+      if (mounted) {
+        if (await TodoService.createTodo(todo, context) > 0) {
+          formKey.currentState!.reset();
+        }
       }
     }
   }

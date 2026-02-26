@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/l10n/app_localizations.dart';
 import 'package:todo_app/services/localeprovider.dart';
@@ -15,6 +16,17 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
+    _initPackageInfo();
+  }
+
+  String _appVersion = "";
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _appVersion = info.version;
+      });
+    }
   }
 
   @override
@@ -138,6 +150,18 @@ class _SettingsState extends State<Settings> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: 20),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                    width: double.infinity,
+                    padding: EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                      color: AppThemes.getPrimaryBg(context),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(child: Text('Todo App $_appVersion')),
                   ),
                 ],
               ),
