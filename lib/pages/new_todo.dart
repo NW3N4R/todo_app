@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/custom_widgets/styles.dart';
+import 'package:todo_app/l10n/app_localizations.dart';
+import 'package:todo_app/services/localnotification.dart';
+import 'package:todo_app/styles.dart';
 import 'package:todo_app/models/formModel.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/todoservice.dart';
@@ -36,7 +38,19 @@ class _NewTodoState extends State<NewTodo> with FormModel {
         // everyDate: everyDate,
       );
       TodoService.createTodo(todo, context);
-      // await scheduleNotification(todo);
+      late DateTime? notifyingDate;
+      if (todo.remindingDate != null) {
+        notifyingDate = todo.remindingDate;
+      } else {
+        String firstDay = todo.repeatingDays!.split(',')[0];
+        notifyingDate = todo.getNextOccurrence(firstDay);
+      }
+      await scheduleNotification(
+        todo.id,
+        todo.title,
+        todo.description,
+        notifyingDate!,
+      );
       if (await TodoService.createTodo(todo, context) > 0) {
         formKey.currentState!.reset();
       }
@@ -45,13 +59,15 @@ class _NewTodoState extends State<NewTodo> with FormModel {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
         title: Text(
-          'ئەرکێکی نوێ',
+          t.newTodo,
           style: TextStyle(
-            fontWeight: FontWeight.w200,
+            fontWeight: FontWeight.w500,
             fontSize: 20.0,
             fontFamily: 'DroidArabicKufi',
           ),
@@ -77,27 +93,29 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             getFormField(
-                              'ناوی ئەرک',
+                              t.nameOfTodo,
                               titleController,
                               context,
-                              formValidator('تکایە ناوی ئەرک بنووسە'),
+                              formValidator(t.todoNameReq),
                               prefixIcon: Icons.task,
                               // prefixIcon: Icons.local_activity,
                             ),
                             getFormField(
-                              'وەسفی ئەرک',
+                              t.descOfTodo,
                               descriptionController,
                               context,
-                              formValidator('تکایە وەسفی ئەرک بنووسە'),
+                              formValidator(t.todoDescReq),
                               prefixIcon: Icons.description,
                             ),
                             getDropDown(
-                              'زەروریەت',
-                              'گرنگی ئەرکەکەت',
+                              t.priority,
+                              t.priority,
                               TodoPriority.values.map((p) {
                                 return DropdownMenuItem(
                                   value: p,
-                                  child: Text(p.ku),
+                                  child: Text(
+                                    t.localeName == 'en' ? p.en : p.ku,
+                                  ),
                                 );
                               }).toList(),
                               priority,
@@ -110,26 +128,30 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                               prefixIcon: Icons.label_important,
                             ),
                             getFormField(
-                              'بەرواری ئاگەدار کردنەوە',
+                              t.dateOfNotification,
                               selectedDateController,
                               context,
                               (value) {
                                 if (value == '' && _selectedDays.isEmpty) {
-                                  return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
+                                  return t.dateOrWeekDay;
                                 }
                                 return null;
                               },
-                              style: getInputStyle('بەروار', context).copyWith(
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedDateController.text = '';
-                                    });
-                                  },
-                                  icon: Icon(Icons.clear),
-                                ),
-                                prefixIcon: Icon(Icons.access_time_filled),
-                              ),
+                              style:
+                                  getInputStyle(
+                                    t.dateOfNotification,
+                                    context,
+                                  ).copyWith(
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedDateController.text = '';
+                                        });
+                                      },
+                                      icon: Icon(Icons.clear),
+                                    ),
+                                    prefixIcon: Icon(Icons.access_time_filled),
+                                  ),
                               readOnly: true,
                               onTap: () async {
                                 selectedDateController.text = await pickDate(
@@ -138,12 +160,10 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                               },
                             ),
                             getFormField(
-                              'کاتی ئاگەدار کردنەوە',
+                              t.timeofNotification,
                               selectedTimeController,
                               context,
-                              formValidator(
-                                'تکایە کاتی ئاگەدارکردنەوە دیاری بکە',
-                              ),
+                              formValidator(t.timeOfTodoRequired),
                               readOnly: true,
                               onTap: () async {
                                 selectedTimeController.text =
@@ -167,7 +187,7 @@ class _NewTodoState extends State<NewTodo> with FormModel {
                 ),
               ),
             ),
-            primaryButton('وەرگرتن', post, context),
+            primaryButton(t.accept, post, context),
           ],
         ),
       ),

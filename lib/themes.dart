@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/services/themeprovider.dart';
 
 class AppColors {
   // Light Mode Colors
@@ -127,6 +129,11 @@ class AppThemes {
     ),
   );
 
+  static ThemeMode currentThemeMode(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    return themeProvider.themeMode;
+  }
+
   static Color getPrimaryBg(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -161,6 +168,14 @@ class AppThemes {
   }
 
   static bool isDarkMode(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark;
+    final themeMode = currentThemeMode(context);
+
+    // If themeMode is system, check current Brightness
+    if (themeMode == ThemeMode.system) {
+      final brightness = MediaQuery.of(context).platformBrightness;
+      return brightness == Brightness.dark;
+    }
+
+    return themeMode == ThemeMode.dark;
   }
 }

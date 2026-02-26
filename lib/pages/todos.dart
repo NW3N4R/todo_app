@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/l10n/app_localizations.dart';
 import 'package:todo_app/models/formModel.dart';
 import 'package:todo_app/models/searchmodel.dart';
 import 'package:todo_app/pages/update.dart';
 import 'package:todo_app/services/todoservice.dart';
-import 'package:todo_app/custom_widgets/styles.dart';
+import 'package:todo_app/styles.dart';
 import 'package:todo_app/themes.dart';
 
 class TodoView extends StatefulWidget {
@@ -26,6 +27,8 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
   }
 
   void showSearchSheet() {
+    final t = AppLocalizations.of(context)!;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -52,7 +55,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         getFormField(
-                          'گەڕان',
+                          t.search,
                           textSearcher,
                           context,
                           (vale) => null,
@@ -73,21 +76,21 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                               ButtonSegment(
                                 value: 'Active',
                                 label: Text(
-                                  'چالاک',
+                                  t.active,
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
                               ButtonSegment(
                                 value: 'Overdue',
                                 label: Text(
-                                  'بەسەر چوو',
+                                  t.overDue,
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
                               ButtonSegment(
                                 value: 'Completed',
                                 label: Text(
-                                  'تەواو بوو',
+                                  t.completed,
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
@@ -113,7 +116,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                                 // Navigator.pop(context);
                               },
                               child: Text(
-                                'گەڕان',
+                                t.search,
                                 style: Theme.of(context).textTheme.bodyMedium!
                                     .copyWith(
                                       color: AppThemes.getPrimaryColor(context),
@@ -124,7 +127,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: Text(
-                                'پاشەگەز بوونەوە',
+                                t.cancel,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),
@@ -144,11 +147,12 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        title: Text('ئەرکەکانم', style: Theme.of(context).textTheme.bodyMedium),
+        title: Text(t.myTodos, style: Theme.of(context).textTheme.bodyMedium),
         actions: [
           IconButton(
             onPressed: showSearchSheet,

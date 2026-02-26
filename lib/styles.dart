@@ -63,7 +63,7 @@ InputDecoration getInputStyle(
     errorStyle: TextStyle(
       color: const Color.fromARGB(255, 159, 98, 98),
       fontSize: 12,
-      fontWeight: FontWeight.w100,
+      fontWeight: FontWeight.w400,
     ),
     enabledBorder: OutlineInputBorder(
       // Border radius for enabled state

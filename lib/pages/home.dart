@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/l10n/app_localizations.dart' show AppLocalizations;
 import 'package:todo_app/models/homemodel.dart';
+import 'package:todo_app/pages/settings.dart';
 import 'package:todo_app/services/todoservice.dart';
 import 'package:todo_app/themes.dart';
 
@@ -29,15 +31,26 @@ class _HomeState extends State<Home> with HomeModel {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           scrolledUnderElevation: 0,
-          title: Text('داشبۆرد', style: Theme.of(context).textTheme.bodyLarge),
+          title: Text(
+            t.dashBoard,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.wrap_text_rounded)),
+            IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Settings()),
+              ),
+              icon: Icon(Icons.wrap_text_rounded),
+            ),
           ],
         ),
         body: Container(
@@ -58,15 +71,15 @@ class _HomeState extends State<Home> with HomeModel {
                     crossAxisSpacing: 10,
                   ),
                   children: [
-                    detailsCard('ئەرکە تەواو بووەکان', completedTodos()),
-                    detailsCard('ئەرکە تەواو نە بووەکان', activeTodos()),
-                    detailsCard('ئەرکە بەسەر چووەکان', overDueTodos()),
+                    detailsCard(t.completedTasks, completedTodos()),
+                    detailsCard(t.activeTasks, activeTodos()),
+                    detailsCard(t.overDueTasks, overDueTodos()),
                   ],
                 ),
               ),
               SizedBox(height: 10),
               Text(
-                'ئەرکەکانی ئەم هەفتەیە',
+                t.thisWeeksTodos,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               SizedBox(height: 10),
@@ -88,6 +101,8 @@ class _HomeState extends State<Home> with HomeModel {
   }
 
   Widget progressCard() {
+    final t = AppLocalizations.of(context)!;
+
     return Container(
       width: double.infinity,
       height: 200,
@@ -106,7 +121,7 @@ class _HomeState extends State<Home> with HomeModel {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ئەرکە ماوەکان',
+                  t.remainingTasks,
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w900,
@@ -138,7 +153,7 @@ class _HomeState extends State<Home> with HomeModel {
               ],
             ),
             Text(
-              '${activeTodos()} ئەر ماوە لە ${allTodos.length}',
+              '${activeTodos()} ${t.remainingTasksCount} ${allTodos.length}',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,
@@ -186,7 +201,7 @@ class _HomeState extends State<Home> with HomeModel {
           Text(
             label,
             softWrap: true,
-            textAlign: TextAlign.right,
+            textAlign: TextAlign.start,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/l10n/app_localizations.dart';
 
-import 'package:todo_app/custom_widgets/styles.dart';
+import 'package:todo_app/styles.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/services/todoservice.dart';
 import 'package:todo_app/models/formmodel.dart';
@@ -41,7 +42,11 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.selectWhere((item) {
-        return todo.repeatingDays!.split(',').contains(item.label);
+        bool isSelected = item.value
+            .toLowerCase()
+            .split(',')
+            .contains(todo.repeatingDays);
+        return isSelected;
       });
     });
     super.initState();
@@ -69,12 +74,14 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'نوێ کردنەوە',
+          t.updateTodo,
           style: TextStyle(
-            fontWeight: FontWeight.w200,
+            fontWeight: FontWeight.w500,
             fontSize: 20.0,
             fontFamily: 'DroidArabicKufi',
           ),
@@ -94,27 +101,27 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                     child: Column(
                       children: [
                         getFormField(
-                          'ناوی ئەرک',
+                          t.nameOfTodo,
                           titleController,
                           context,
-                          formValidator('تکایە ناوی ئەرک بنووسە'),
+                          formValidator(t.todoNameReq),
                           prefixIcon: Icons.task,
                           // prefixIcon: Icons.local_activity,
                         ),
                         getFormField(
-                          'وەسفی ئەرک',
+                          t.descOfTodo,
                           descriptionController,
                           context,
-                          formValidator('تکایە وەسفی ئەرک بنووسە'),
+                          formValidator(t.todoDescReq),
                           prefixIcon: Icons.description,
                         ),
                         getDropDown(
-                          'زەروریەت',
-                          'گرنگی ئەرکەکەت',
+                          t.priority,
+                          t.priority,
                           TodoPriority.values.map((p) {
                             return DropdownMenuItem(
                               value: p,
-                              child: Text(p.ku),
+                              child: Text(t.localeName == 'en' ? p.en : p.ku),
                             );
                           }).toList(),
                           priority,
@@ -127,26 +134,27 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                           prefixIcon: Icons.label_important,
                         ),
                         getFormField(
-                          'بەرواری ئاگەدار کردنەوە',
+                          t.dateOfNotification,
                           selectedDateController,
                           context,
                           (value) {
                             if (value == '' && _selectedDays.isEmpty) {
-                              return 'یان بەروار یان ڕۆژی ئاگەدار کردنەوە داواکراوە';
+                              return t.dateOrWeekDay;
                             }
                             return null;
                           },
-                          style: getInputStyle('بەروار', context).copyWith(
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedDateController.text = '';
-                                });
-                              },
-                              icon: Icon(Icons.clear),
-                            ),
-                            prefixIcon: Icon(Icons.access_time_filled),
-                          ),
+                          style: getInputStyle(t.dateOfNotification, context)
+                              .copyWith(
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedDateController.text = '';
+                                    });
+                                  },
+                                  icon: Icon(Icons.clear),
+                                ),
+                                prefixIcon: Icon(Icons.access_time_filled),
+                              ),
                           readOnly: true,
                           onTap: () async {
                             selectedDateController.text = await pickDate(
@@ -155,10 +163,10 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                           },
                         ),
                         getFormField(
-                          'کاتی ئاگەدار کردنەوە',
+                          t.timeofNotification,
                           selectedTimeController,
                           context,
-                          formValidator('تکایە کاتی ئاگەدارکردنەوە دیاری بکە'),
+                          formValidator(t.timeOfTodoRequired),
                           readOnly: true,
                           onTap: () async {
                             selectedTimeController.text =
@@ -180,7 +188,7 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
                 ),
               ),
             ),
-            primaryButton('وەرگرتن', post, context),
+            primaryButton(t.accept, post, context),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:todo_app/l10n/app_localizations.dart';
 import 'package:todo_app/models/banner.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:path/path.dart' as p;
@@ -38,6 +39,8 @@ class TodoService {
   }
 
   static Future<int> createTodo(ToDoModel todo, BuildContext context) async {
+    final t = AppLocalizations.of(context)!;
+
     if (_db == null) throw Exception('db is null');
     try {
       int st = await _db!.insert(
@@ -49,7 +52,7 @@ class TodoService {
         if (context.mounted) {
           BannerToast.showbanner(
             context: context,
-            message: 'کردارەکەت سەرکەوتوو بوو',
+            message: t.todoSaved,
             severity: Severity.info,
           );
         }
@@ -59,7 +62,7 @@ class TodoService {
       if (context.mounted) {
         BannerToast.showbanner(
           context: context,
-          message: 'هەڵەیەک ڕوویدا',
+          message: t.errorHappened,
           severity: Severity.error,
         );
       }
@@ -82,6 +85,8 @@ class TodoService {
     if (_db == null) {
       throw Exception('Database not initialized. Call openDB() first.');
     }
+    final t = AppLocalizations.of(context)!;
+
     try {
       await _db!.update(
         _tableName,
@@ -94,7 +99,7 @@ class TodoService {
         if (context.mounted) {
           BannerToast.showbanner(
             context: context,
-            message: 'Todo not found for update.',
+            message: t.errorHappened,
             severity: Severity.error,
           );
         }
@@ -105,12 +110,19 @@ class TodoService {
       if (context.mounted) {
         BannerToast.showbanner(
           context: context,
-          message: 'Todo Updated Successfully!',
+          message: t.todoUpdated,
           severity: Severity.info,
         );
       }
       return true;
     } catch (error) {
+      if (context.mounted) {
+        BannerToast.showbanner(
+          context: context,
+          message: t.errorHappened,
+          severity: Severity.error,
+        );
+      }
       return false; // Return false if there was an error
     }
   }
@@ -119,6 +131,8 @@ class TodoService {
     if (_db == null) {
       throw Exception('Database not initialized. Call openDB() first.');
     }
+    final t = AppLocalizations.of(context)!;
+
     try {
       await _db!.delete(_tableName, where: 'id = ?', whereArgs: [id]);
       var index = todos.indexWhere(
@@ -130,12 +144,19 @@ class TodoService {
       if (context.mounted) {
         BannerToast.showbanner(
           context: context,
-          message: 'Todo Deleted Successfully!',
+          message: t.todoDeleted,
           severity: Severity.info,
         );
       }
       return true; // Return true if the deletion was successful
     } catch (error) {
+      if (context.mounted) {
+        BannerToast.showbanner(
+          context: context,
+          message: t.errorHappened,
+          severity: Severity.error,
+        );
+      }
       return false; // Return false if there was an error
     }
   }

@@ -38,13 +38,41 @@ class ToDoModel {
       description: map['description'],
       priority: TodoPriority.values[map['priority']],
       isCompleted: map['isCompleted'] == 1,
-      remindingDate: DateTime.parse(map['remindingDate']),
+      remindingDate: DateTime.tryParse(map['remindingDate']),
       repeatingDays: map['repeatingDays'],
     );
   }
 
   static String getFormattedDateAsString(DateTime datetime) {
     return "${datetime.day}/${datetime.month}/${datetime.year} ${datetime.hour}:${datetime.minute}";
+  }
+
+  DateTime getNextOccurrence(String dayValue) {
+    final Map<String, int> weekdayMap = {
+      'mon': DateTime.monday,
+      'tue': DateTime.tuesday,
+      'wedn': DateTime.wednesday,
+      'ther': DateTime.thursday,
+      'fri': DateTime.friday,
+      'sat': DateTime.saturday,
+      'sun': DateTime.sunday,
+    };
+
+    DateTime now = DateTime.now();
+    int? targetWeekday = weekdayMap[dayValue];
+
+    if (targetWeekday == null) return now;
+
+    // The "+ 6) % 7 + 1" logic forces the result to be 1 to 7 days in the future.
+    // This avoids returning "today" if today is Monday.
+    int daysUntil = (targetWeekday - now.weekday + 6) % 7 + 1;
+
+    // Create the date at midnight to keep it clean
+    return DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).add(Duration(days: daysUntil));
   }
 }
 

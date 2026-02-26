@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:todo_app/l10n/app_localizations.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/themes.dart';
 
@@ -23,15 +24,23 @@ mixin FormModel {
   }
 
   List<DropdownItem<String>> days = [
-    DropdownItem(label: 'شەممە', value: 'شەممە'),
-    DropdownItem(label: 'یەک شەممە', value: 'یەک شەممە'),
-    DropdownItem(label: 'دوو شەممە', value: 'دوو شەممە'),
-    DropdownItem(label: 'سێ شەممە', value: 'سێ شەممە'),
-    DropdownItem(label: 'چوار شەممە', value: 'چوار شەممە'),
-    DropdownItem(label: 'پێنج شەممە', value: 'پێنج شەممە'),
-    DropdownItem(label: 'هەینی', value: 'هەینی'),
+    DropdownItem(label: 'شەممە', value: 'sat'),
+    DropdownItem(label: 'یەک شەممە', value: 'sun'),
+    DropdownItem(label: 'دوو شەممە', value: 'mon'),
+    DropdownItem(label: 'سێ شەممە', value: 'tue'),
+    DropdownItem(label: 'چوار شەممە', value: 'wedn'),
+    DropdownItem(label: 'پێنج شەممە', value: 'ther'),
+    DropdownItem(label: 'هەینی', value: 'fri'),
   ];
-
+  List<DropdownItem<String>> daysEn = [
+    DropdownItem(label: 'Saturday', value: 'sat'),
+    DropdownItem(label: 'Sunday', value: 'sun'),
+    DropdownItem(label: 'Monday', value: 'mon'),
+    DropdownItem(label: 'Tuesday', value: 'tue'),
+    DropdownItem(label: 'Wednesday', value: 'wedn'),
+    DropdownItem(label: 'Thersday', value: 'ther'),
+    DropdownItem(label: 'Friday', value: 'fri'),
+  ];
   DateTime? getCompleteDate(String time12h, String date) {
     try {
       return DateFormat("dd-MM-yyyy hh:mm a").parse("$date $time12h");
@@ -41,40 +50,19 @@ mixin FormModel {
     }
   }
 
-  List<String> matchingDays(String daysString) {
-    List<String> dayList = [];
-    for (var day in daysString.split(',')) {
-      switch (day) {
-        case 'شەممە':
-          dayList.add('Saturday');
-        case 'یەک شەممە':
-          dayList.add('Sunday');
-        case 'دوو شەممە':
-          dayList.add('Monday');
-        case 'سێ شەممە':
-          dayList.add('Tuesday');
-        case 'چوار شەممە':
-          dayList.add('Wednesday');
-        case 'پێنج شەممە':
-          dayList.add('Thursday');
-        case 'هەینی':
-          dayList.add('Friday');
-      }
-    }
-    return dayList;
-  }
-
   MultiDropdown daySelector(BuildContext context, OnSelectionChanged onChange) {
+    final t = AppLocalizations.of(context)!;
+
     return MultiDropdown(
-      items: days,
+      items: t.localeName == "ar" ? days : daysEn,
       controller: controller,
       dropdownDecoration: DropdownDecoration(
         backgroundColor: AppThemes.getSecondaryBg(context),
       ),
       onSelectionChange: onChange,
       fieldDecoration: FieldDecoration(
-        hintText: 'ڕۆژەکانی هەفتە',
-        labelText: 'ڕۆژەکانی هەفتە',
+        hintText: t.daysOfWeek,
+        labelText: t.daysOfWeek,
         labelStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontFamily: 'DroidArabicKufi',
