@@ -57,7 +57,6 @@ mixin HomeModel {
     );
     List<ToDoModel> tempList = [];
     for (var x in allTodos) {
-      if (tempList.length == 3) break;
       bool isScheduled = false;
       bool isDateInWeek = false;
 
@@ -82,6 +81,8 @@ mixin HomeModel {
         tempList.add(x);
       }
     }
+    tempList.sort((a, b) => a.id.compareTo(b.id));
+
     return tempList;
   }
 

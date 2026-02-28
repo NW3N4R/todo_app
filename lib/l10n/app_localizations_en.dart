@@ -127,4 +127,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todoDeleted => 'Todo Deleted';
+
+  @override
+  String get noDataFound => 'No Data Found';
 }

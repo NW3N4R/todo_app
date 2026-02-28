@@ -162,7 +162,7 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
       ),
       body: SafeArea(
         child: (viewList.isEmpty)
-            ? Center(child: Text('هیچ داتایەک نەدۆزرایەوە'))
+            ? Center(child: Text(t.noDataFound))
             : RefreshIndicator(
                 onRefresh: () async {
                   await Future.delayed(
@@ -189,7 +189,9 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                       background: Container(
                         margin: const EdgeInsets.all(8),
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        alignment: Alignment.centerLeft,
+                        alignment: t.localeName == 'en'
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Icon(Icons.delete, color: Colors.red),
                       ),
                       child: Container(

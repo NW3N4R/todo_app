@@ -22,10 +22,12 @@ class _NewTodoState extends State<NewTodo> with FormModel {
   }
 
   void post() async {
+    var lastTodo = await TodoService.readTodos();
+
     if (formKey.currentState!.validate()) {
       // If the form is valid, save the todo
       final todo = ToDoModel(
-        id: DateTime.now().microsecond,
+        id: DateTime.now().millisecond,
         title: titleController.text,
         description: descriptionController.text,
         priority: priority, // Default priority

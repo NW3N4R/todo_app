@@ -334,6 +334,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Todo Deleted'**
   String get todoDeleted;
+
+  /// No description provided for @noDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data Found'**
+  String get noDataFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

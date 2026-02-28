@@ -127,4 +127,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get todoDeleted => 'ئەرکەکە سڕایەوە';
+
+  @override
+  String get noDataFound => 'هیچ داتایەک نەدۆزرایەوە';
 }

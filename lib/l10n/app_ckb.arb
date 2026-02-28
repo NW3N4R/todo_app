@@ -39,5 +39,6 @@
   "errorHappened": "هەڵەیەک ڕوویدا",
   "todoSaved": "ئەرکەکە تۆمار کرا",
   "todoUpdated": "ئەرکەکە نوێ کرایەوە",
-  "todoDeleted": "ئەرکەکە سڕایەوە"
+  "todoDeleted": "ئەرکەکە سڕایەوە",
+  "noDataFound" : "هیچ داتایەک نەدۆزرایەوە"
 }

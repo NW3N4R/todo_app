@@ -39,5 +39,6 @@
   "errorHappened": "an Error Occured",
   "todoSaved": "Todo Saved!",
   "todoUpdated": "Todo Updated",
-  "todoDeleted": "Todo Deleted"
+  "todoDeleted": "Todo Deleted",
+  "noDataFound" : "No Data Found"
 }
