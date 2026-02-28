@@ -15,7 +15,8 @@ mixin HomeModel {
   int activeTodos() {
     return allTodos.where((x) {
       bool matchesStatus = false;
-      if (x.repeatingDays != null && !x.isCompleted) {
+      bool isRepeative = x.repeatingDays != null && x.repeatingDays!.isNotEmpty;
+      if (isRepeative && !x.isCompleted) {
         matchesStatus = true;
       }
 
@@ -74,7 +75,8 @@ mixin HomeModel {
       if (x.remindingDate != null) {
         isDateInWeek =
             !x.remindingDate!.isBefore(startOfToday) &&
-            !x.remindingDate!.isAfter(endOfThisWeek);
+            !x.remindingDate!.isAfter(endOfThisWeek) &&
+            !x.isCompleted;
       }
 
       if (isScheduled || isDateInWeek) {
