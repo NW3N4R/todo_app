@@ -25,7 +25,6 @@ mixin SearchModel {
       // Case: Completed
       if (selection.contains('Completed') && x.isCompleted) {
         matchesStatus = true;
-        print('case completed');
       }
 
       // Case: OverDue
@@ -34,7 +33,6 @@ mixin SearchModel {
           x.remindingDate != null) {
         if (x.remindingDate!.isBefore(DateTime.now())) {
           matchesStatus = true;
-          print('case over due');
         }
       }
       // Case: Active
@@ -42,11 +40,9 @@ mixin SearchModel {
         // Add !x.isCompleted here to ensure finished repeating tasks don't show up as active
         if (isRepeative && !x.isCompleted) {
           matchesStatus = true;
-          print('active repeating days');
         } else if (x.remindingDate != null && !x.isCompleted) {
           if (x.remindingDate!.isAfter(DateTime.now())) {
             matchesStatus = true;
-            print('active reminding date is after now');
           }
         }
       }

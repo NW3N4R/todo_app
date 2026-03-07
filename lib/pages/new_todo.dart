@@ -22,8 +22,6 @@ class _NewTodoState extends State<NewTodo> with FormModel {
   }
 
   void post() async {
-    var lastTodo = await TodoService.readTodos();
-
     if (formKey.currentState!.validate()) {
       // If the form is valid, save the todo
       final todo = ToDoModel(
@@ -47,12 +45,14 @@ class _NewTodoState extends State<NewTodo> with FormModel {
         String firstDay = todo.repeatingDays!.split(',')[0];
         notifyingDate = todo.getNextOccurrence(firstDay);
       }
+
       await scheduleNotification(
         todo.id,
         todo.title,
         todo.description,
         notifyingDate!,
       );
+
       if (mounted) {
         if (await TodoService.createTodo(todo, context) > 0) {
           formKey.currentState!.reset();
