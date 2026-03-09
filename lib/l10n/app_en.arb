@@ -40,5 +40,10 @@
   "todoSaved": "Todo Saved!",
   "todoUpdated": "Todo Updated",
   "todoDeleted": "Todo Deleted",
-  "noDataFound" : "No Data Found"
+  "noDataFound" : "No Data Found",
+  "writtenBy": "Written By",
+  "supervisor" :"Supervisor",
+  "aboutParagraph": "todo app is a small light weight application that developed in flutter as a research result of final graduation research, it has been presented to kalar computer institute for the academic year (2025 - 2026)",
+  "about": "About",
+  "supervisorName": "Arezu Nesredin Qadir"
 }

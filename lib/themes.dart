@@ -91,7 +91,7 @@ class AppThemes {
       //   color: Colors.white,
       // ),
       bodySmall: TextStyle(
-        fontSize: 14,
+        fontSize: 12,
         color: Colors.white60,
         fontFamily: 'DroidArabicKufi',
       ),

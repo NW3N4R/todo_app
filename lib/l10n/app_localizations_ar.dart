@@ -130,4 +130,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noDataFound => 'هیچ داتایەک نەدۆزرایەوە';
+
+  @override
+  String get writtenBy => 'گەشە پێدراوە لەلایەن';
+
+  @override
+  String get supervisor => 'سەرپەرشتیاری توێژینەوە';
+
+  @override
+  String get aboutParagraph => 'ئەپی ToDo  ئەپێكی بچووکە کە بە فڵاتەر گەشە پێدراوە وەک ئەنجامی توێژینەوە لەسەر چۆنێتی ئیشکردن و کۆد نووسین بە زمانی دارت، توێژینەوەکە پێشکەش بە پەیمانگای تەکنیکی کەلار کراوە بۆ ساڵی خوێندنی ٢٠٢٥ - ٢٠٢٦';
+
+  @override
+  String get about => 'دەربارە';
+
+  @override
+  String get supervisorName => 'ئارەزوو نەصرەدین قادر';
 }

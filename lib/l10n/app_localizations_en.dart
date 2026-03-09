@@ -130,4 +130,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noDataFound => 'No Data Found';
+
+  @override
+  String get writtenBy => 'Written By';
+
+  @override
+  String get supervisor => 'Supervisor';
+
+  @override
+  String get aboutParagraph => 'todo app is a small light weight application that developed in flutter as a research result of final graduation research, it has been presented to kalar computer institute for the academic year (2025 - 2026)';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get supervisorName => 'Arezu Nesredin Qadir';
 }

@@ -340,6 +340,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Data Found'**
   String get noDataFound;
+
+  /// No description provided for @writtenBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Written By'**
+  String get writtenBy;
+
+  /// No description provided for @supervisor.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervisor'**
+  String get supervisor;
+
+  /// No description provided for @aboutParagraph.
+  ///
+  /// In en, this message translates to:
+  /// **'todo app is a small light weight application that developed in flutter as a research result of final graduation research, it has been presented to kalar computer institute for the academic year (2025 - 2026)'**
+  String get aboutParagraph;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @supervisorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Arezu Nesredin Qadir'**
+  String get supervisorName;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
