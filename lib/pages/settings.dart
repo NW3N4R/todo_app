@@ -38,12 +38,12 @@ class _SettingsState extends State<Settings> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final List<String> devs = t.localeName == 'en'
         ? [
-            '\u2022 Mohammed Siamin Mehmud',
+            '\u2022 Mohammed Siamen Mehmud',
             '\u2022 Mohammad Mejid Rashid',
             '\u2022 Yousif Shehab Ahmed',
           ]
         : [
-            '\u2022 محمد سیامین محمود',
+            '\u2022 محمد سیامەن محمود',
             '\u2022 محمد مجید ڕەشید',
             '\u2022 یوسف شەهاب احمد',
           ];

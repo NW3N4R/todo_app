@@ -21,7 +21,7 @@ mixin HomeModel {
       }
 
       if (x.remindingDate != null &&
-          x.remindingDate!.isAfter(DateTime.now()) &&
+          x.remindingDate!.add(Duration(hours: 1)).isAfter(DateTime.now()) &&
           !x.isCompleted) {
         matchesStatus = true;
       }
@@ -36,7 +36,7 @@ mixin HomeModel {
   int overDueTodos() {
     return allTodos.where((x) {
       if (!x.isCompleted && x.remindingDate != null) {
-        if (x.remindingDate!.isBefore(DateTime.now())) {
+        if (x.remindingDate!.add(Duration(hours: 1)).isBefore(DateTime.now())) {
           return true;
         }
       }

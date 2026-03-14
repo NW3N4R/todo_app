@@ -63,12 +63,16 @@ class _UpdateTodoState extends State<UpdateTodo> with FormModel {
         description: descriptionController.text,
         priority: priority, // Default priority
         isCompleted: false,
-        remindingDate: selectedDate,
+        remindingDate: getCompleteDate(
+          selectedTimeController.text,
+          selectedDateController.text,
+        ),
         repeatingDays: _selectedDays.join(','),
         // everyDate: everyDate,
       );
       TodoService.updateTodo(todo, context);
       // await scheduleNotification(todo);
+      print(selectedDate);
     }
   }
 

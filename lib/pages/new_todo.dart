@@ -53,6 +53,27 @@ class _NewTodoState extends State<NewTodo> with FormModel {
         notifyingDate!,
       );
 
+      DateTime scheduled1Hour = notifyingDate.subtract(Duration(hours: 1));
+      if (scheduled1Hour.isBefore(DateTime.now())) {
+        scheduled1Hour = notifyingDate;
+      }
+      await scheduleNotification(
+        todo.id,
+        todo.title,
+        todo.description,
+        scheduled1Hour,
+      );
+
+      DateTime scheduled10Mins = notifyingDate.subtract(Duration(minutes: 10));
+      if (scheduled10Mins.isBefore(DateTime.now())) {
+        scheduled10Mins = notifyingDate;
+      }
+      await scheduleNotification(
+        todo.id,
+        todo.title,
+        todo.description,
+        scheduled10Mins,
+      );
       if (mounted) {
         if (await TodoService.createTodo(todo, context) > 0) {
           formKey.currentState!.reset();

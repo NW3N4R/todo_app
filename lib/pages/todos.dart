@@ -95,7 +95,6 @@ class _TodoViewState extends State<TodoView> with FormModel, SearchModel {
                                 ),
                               ),
                             ],
-                            multiSelectionEnabled: true,
                             selected: selection,
                             onSelectionChanged: (newSelection) {
                               setModalState(() {

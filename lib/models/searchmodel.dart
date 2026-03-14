@@ -31,7 +31,7 @@ mixin SearchModel {
       if (selection.contains('Overdue') &&
           !x.isCompleted &&
           x.remindingDate != null) {
-        if (x.remindingDate!.isBefore(DateTime.now())) {
+        if (x.remindingDate!.add(Duration(hours: 1)).isBefore(DateTime.now())) {
           matchesStatus = true;
         }
       }
@@ -41,7 +41,7 @@ mixin SearchModel {
         if (isRepeative && !x.isCompleted) {
           matchesStatus = true;
         } else if (x.remindingDate != null && !x.isCompleted) {
-          if (x.remindingDate!.isAfter(DateTime.now())) {
+          if (x.remindingDate!.add(Duration(hours: 1)).isAfter(DateTime.now())) {
             matchesStatus = true;
           }
         }
